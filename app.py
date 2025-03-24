@@ -21,8 +21,8 @@ def login():
         email = request.form['email']
 
         password = request.form['password']
-        salt = bcrypt.gensalt() #will strengthen the generated hash value
-        hashed_password = bcrypt.hashpw(password.encode('utf-8'),salt)
+        #salt = bcrypt.gensalt() #will strengthen the generated hash value
+        #hashed_password = bcrypt.hashpw(password.encode('utf-8'),salt)
 
         if check_email(email):
             if check_password(email,hashed_password):
@@ -51,7 +51,7 @@ def check_email(email):
         return True
     return False
 
-def check_password(email, hashed_password):
+def check_password(email,password): #compare entered plaintext password to hashed password in Users table
     connection = sql.connect('database.db')
     cursor = connection.cursor()
     cursor.execute('SELECT password FROM Users WHERE email = ?', (email,))
@@ -59,7 +59,8 @@ def check_password(email, hashed_password):
     result = cursor.fetchone()
     connection.close()
 
-    if bcrypt.checkpw(hashed_password,result[0]):
+
+    if bcrypt.checkpw(password,result[0]):
         return True
     return False
 
