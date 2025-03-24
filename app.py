@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, url_for, redirect
 import sqlite3 as sql
 import hashlib  # Using hashlib instead of bcrypt for simplicity and speed
+import bcrypt
 
 app = Flask(__name__)
 host = 'http://127.0.0.1:5000/'
@@ -46,16 +47,27 @@ def check_email(email):
 
 # Password checker function (using SHA256 hash)
 def check_password(email, password):
-    hashed = hashlib.sha256(password.encode()).hexdigest()
+    #hashed = hashlib.sha256(password.encode()).hexdigest()
 
     connection = sql.connect('database.db')
     cursor = connection.cursor()
     cursor.execute('SELECT hash FROM Users WHERE email = ?', (email,))
     result = cursor.fetchone()
     connection.close()
+    #print(result[0])
+    #print(hashed)
+    #if result and hashed == result[0]:
+    #    return True
+    #return False
+    
 
-    if result and hashed == result[0]:
-        return True
+    if result:
+        stored_hash = result[0]
+        print(stored_hash)
+        print(result[0])
+        if isinstance(stored_hash, str):
+            stored_hash = stored_hash.encode('utf-8')  # In case it's stored as text
+        return bcrypt.checkpw(password.encode('utf-8'), stored_hash)
     return False
 
 # Optional: Function to hash password when adding new users
