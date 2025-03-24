@@ -1,26 +1,26 @@
 from flask import Flask, render_template, request, url_for, redirect
 import sqlite3 as sql
-import hashlib  # Using hashlib instead of bcrypt for simplicity and speed
+#import hashlib
 import bcrypt
 
 app = Flask(__name__)
 host = 'http://127.0.0.1:5000/'
 
-# HOME page route
+#home page immediately renders login page
 @app.route('/')
 def index():
     return render_template('login.html')
 
-# LOGIN page route
+#login page
 @app.route('/login', methods=['POST', 'GET'])
 def login():
     if request.method == 'POST':
         email = request.form['email']
-        password = request.form['password']  # This should match the name attribute in HTML
+        password = request.form['password']
 
-        if check_email(email):
-            if check_password(email, password):
-                return redirect(url_for('filler'))  # Redirect to dashboard or next page
+        if check_email(email): #check if email is in Users table
+            if check_password(email, password): #verify password
+                return redirect(url_for('filler'))  #redirect to next page
             else:
                 error = 'Incorrect password. Please try again.'
                 return render_template('login.html', error=error)
@@ -30,12 +30,12 @@ def login():
     else:
         return render_template('login.html')
 
-# Dummy page after login
+#dummy page meant to demonstrate successful login
 @app.route('/filler', methods=['POST', 'GET'])
 def filler():
-    return "Login successful! Welcome to the dashboard."
+    return "Login successful!"
 
-# Email checker function
+#does email exist in Users
 def check_email(email):
     connection = sql.connect('database.db')
     cursor = connection.cursor()
@@ -45,34 +45,22 @@ def check_email(email):
 
     return result[0] > 0 if result else False
 
-# Password checker function (using SHA256 hash)
+#check if password is valid (passwords were generated using SHA256 + salt from the bcrypt library)
 def check_password(email, password):
-    #hashed = hashlib.sha256(password.encode()).hexdigest()
 
     connection = sql.connect('database.db')
     cursor = connection.cursor()
-    cursor.execute('SELECT hash FROM Users WHERE email = ?', (email,))
+    cursor.execute('SELECT hash FROM Users WHERE email = ?', (email,)) #retrieve corresponding hashed password from Users table
     result = cursor.fetchone()
     connection.close()
-    #print(result[0])
-    #print(hashed)
-    #if result and hashed == result[0]:
-    #    return True
-    #return False
-    
-
+   
     if result:
         stored_hash = result[0]
-        print(stored_hash)
-        print(result[0])
         if isinstance(stored_hash, str):
-            stored_hash = stored_hash.encode('utf-8')  # In case it's stored as text
-        return bcrypt.checkpw(password.encode('utf-8'), stored_hash)
+            stored_hash = stored_hash.encode('utf-8')
+        return bcrypt.checkpw(password.encode('utf-8'), stored_hash) #check if hashed password matches the one in the Users table
     return False
 
-# Optional: Function to hash password when adding new users
-def hash_password(password):
-    return hashlib.sha256(password.encode()).hexdigest()
 
 if __name__ == "__main__":
     app.run(debug=True)
