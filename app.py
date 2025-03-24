@@ -11,7 +11,7 @@ host = 'http://127.0.0.1:5000/'
 @app.route('/')
 # function for rendering index.html (home page)
 def index():
-    return render_template('index.html')
+    return render_template('login.html')
 
 #call when user presses submit button. checks if username & password is valid
 
@@ -25,9 +25,9 @@ def login():
         #hashed_password = bcrypt.hashpw(password.encode('utf-8'),salt)
 
         if check_email(email):
-            if check_password(email,hashed_password):
+            if check_password(email,password):
                 #navigate to next page
-                return redirect(url_for('home')) #insert name of page here
+                return redirect(url_for('filler')) #insert name of page here
             else:
                 #notify that password is incorrect
                 error = 'Incorrect password. Please try again.'
@@ -63,6 +63,8 @@ def check_password(email,password): #compare entered plaintext password to hashe
     if bcrypt.checkpw(password,result[0]):
         return True
     return False
+
+@app.route('/filler', methods = ['POST','GET'])
 
 
 #read Users.csv and hash passwords before inserting in sql table
