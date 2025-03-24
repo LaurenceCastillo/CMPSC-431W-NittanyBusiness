@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request
 import sqlite3 as sql
+from hashlib import sha256
 
 app = Flask(__name__)
 
@@ -9,6 +10,23 @@ host = 'http://127.0.0.1:5000/'
 # function for rendering index.html (home page)
 def index():
     return render_template('index.html')
+
+#call when user presses submit button. checks if username & password is valid
+
+@app.route('/login', methods = ['POST', 'GET'])
+def login():
+    email = request.form['email']
+    encoded_email = email.encode('utf-8')
+    hashed_email = sha256(encoded_email)
+    hex_email = hashed_email.hexdigest()
+
+    password = request.form['password']
+    encoded_password = password.encode('utf-8')
+    hashed_password = sha256(encoded_password)
+    hex_password = hashed_password.hexdigest()
+
+    pass
+
 
 @app.route('/name', methods=['POST', 'GET'])
 # function for rendering all elements of input.html and its input form
