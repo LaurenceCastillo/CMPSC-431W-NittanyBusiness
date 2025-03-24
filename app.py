@@ -74,16 +74,18 @@ def hash_password(password):
 
 connect = sql.connect('database.db')
 cursor = connect.cursor()
-with open('Useres.csv', mode = 'r') as file:
+with open('users.csv', mode = 'r') as file:
     csv = csv.DictReader(file)
     for row in csv:
         email = row['email']
         password = row['password']
 
         hashed_password = hash_password(password)
+        cursor.execute('CREATE TABLE IF NOT EXISTS Users(email CHAR(30) PRIMARY KEY, password CHAR(100))') #Note: Not to be confused with users table leftover from web exercise
 
         try:
             cursor.execute('INSERT INTO Users (email,password) VALUES (?, ?)', (email,hashed_password))
+            #cursor.execute('UPDATE users SET password = ? WHERE email = ?'(hashed_password,email))
         except sql.IntegrityError: #if email already exists (assuming email is set as UNIQUE)
             continue
             
