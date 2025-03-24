@@ -1,9 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script>
-       
-    </script>
     <meta charset="UTF-8">
     <title>Login | My Space</title>
 </head>
@@ -13,29 +10,34 @@
         <div class="container" style="width: 350px;">
             <p style="text-align: center;">Welcome back! Would you like to login?</p>
             <h3 style="text-align: center;">Sign In</h3>
+            
             <div class="userid-container">
                 <label for="email" class="required">Username</label>
                 <input type="text" id="email" name="email" required class="logintxt-container"/>
             </div>
+            
             <div class="pswd-container">
-                <label for="pass" class="required">Password</label>
-                <input type="password" id="pass" name="pass" required class="logintxt-container"/>
+                <label for="password" class="required">Password</label>
+                <input type="password" id="password" name="password" required class="logintxt-container"/>
             </div>
+            
             {% if error %}
-                <p class="imp-txt">{{ error }}</p>
+                <p class="imp-txt" style="color:red;">{{ error }}</p>
             {% endif %}
+            
             <div class="btn-container">
                 <button type="submit" id="login" class="log-btn">Log In</button>
             </div>
+            
             <div class="signuptxt-container">
                 <label id="signupTxt">New to NittanyStore? <a href="/signup">Sign up here!</a></label>
             </div>
         </div>
     </form>
 </body>
-</html>
 
 <footer>
     <hr />
     <p><i>&copy; NittanyStore</i></p>
 </footer>
+</html>
