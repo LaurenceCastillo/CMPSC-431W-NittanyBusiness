@@ -42,7 +42,7 @@ def login():
 def check_email(email):
     connection = sql.connect('database.db')
     cursor = connection.cursor()
-    cursor.execute('SELECT COUNT(1) FROM Users WHERE email = ?', (email,))
+    cursor.execute('SELECT COUNT(1) FROM Users WHERE email = ?;', (email,))
 
     result = cursor.fetchone()
     connection.close()
@@ -54,7 +54,7 @@ def check_email(email):
 def check_password(email,password): #compare entered plaintext password to hashed password in Users table
     connection = sql.connect('database.db')
     cursor = connection.cursor()
-    cursor.execute('SELECT password FROM Users WHERE email = ?', (email,))
+    cursor.execute('SELECT password FROM Users WHERE email = ?;', (email,))
 
     result = cursor.fetchone()
     connection.close()
@@ -74,17 +74,17 @@ def hash_password(password):
 
 connect = sql.connect('database.db')
 cursor = connect.cursor()
-with open('users.csv', mode = 'r') as file:
+with open('NittanyBusinessDataset_v3/Users.csv', mode = 'r', encoding = 'utf-8-sig') as file:
     csv = csv.DictReader(file)
     for row in csv:
         email = row['email']
         password = row['password']
 
         hashed_password = hash_password(password)
-        cursor.execute('CREATE TABLE IF NOT EXISTS Users(email CHAR(30) PRIMARY KEY, password CHAR(100))') #Note: Not to be confused with users table leftover from web exercise
+        cursor.execute('CREATE TABLE IF NOT EXISTS Users(email CHAR(30) PRIMARY KEY, password CHAR(100));') #Note: Not to be confused with users table leftover from web exercise
 
         try:
-            cursor.execute('INSERT INTO Users (email,password) VALUES (?, ?)', (email,hashed_password))
+            cursor.execute('INSERT INTO Users (email,password) VALUES (?, ?);', (email,hashed_password))
             #cursor.execute('UPDATE users SET password = ? WHERE email = ?'(hashed_password,email))
         except sql.IntegrityError: #if email already exists (assuming email is set as UNIQUE)
             continue
