@@ -62,5 +62,31 @@ def check_password(email, password):
     return False
 
 
+def hash_password(password):
+    salt = bcrypt.gensalt() #will strengthen the generated hash value
+    hashed_password = bcrypt.hashpw(password.encode('utf-8'),salt)
+    return hashed_password
+
+#Note: commenting database setup out because it takes 15-20 minutes to run and only needs to be done once
+ 
+#connect = sql.connect('database.db')
+#cursor = connect.cursor()
+#with open('NittanyBusinessDataset_v3/Users.csv', mode = 'r', encoding = 'utf-8-sig') as file:
+#    csv = csv.DictReader(file)
+#    cursor.execute('CREATE TABLE IF NOT EXISTS Users(email CHAR(30) PRIMARY KEY, password CHAR(100));')
+ 
+#    connect.execute('BEGIN TRANSACTION;')
+#    for row in csv:
+#        email = row['email']
+#        password = row['password']
+ 
+#        hashed_password = hash_password(password)
+
+#        try:
+#            cursor.execute('INSERT INTO Users (email,password) VALUES (?, ?);', (email,hashed_password))
+#        except sql.IntegrityError: #if email already exists
+#            continue  
+#    connect.commit()
+
 if __name__ == "__main__":
     app.run(debug=True)
