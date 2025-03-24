@@ -1,0 +1,85 @@
+CREATE TABLE Users (
+    email           VARCHAR(50) PRIMARY KEY,
+    password        VARCHAR(30) NOT NULL
+);
+
+CREATE TABLE Seller (
+    seller_email    VARCHAR(50) PRIMARY KEY NOT NULL,
+    seller_bname    VARCHAR(100),
+    seller_addr_ID  VARCHAR(50),
+    bank_rno        VARCHAR(11),
+    bank_accno      INT(8),
+    balance         INT,
+    FOREIGN KEY (seller_email) REFERENCES Users(email) ON DELETE CASCADE
+);
+
+CREATE TABLE Buyer (
+    buyer_email     VARCHAR(50) PRIMARY KEY NOT NULL,
+    buyer_bname     VARCHAR(100),
+    buyer_addr_ID   VARCHAR(50),
+    FOREIGN KEY (buyer_email) REFERENCES Users(email) ON DELETE CASCADE
+);
+
+CREATE TABLE HelpDesk (
+    email           VARCHAR(50) PRIMARY KEY NOT NULL,
+    position        VARCHAR(50),
+    FOREIGN KEY (email) REFERENCES Users(email) ON DELETE CASCADE
+);
+
+CREATE TABLE Products (
+    seller_email    VARCHAR(50) NOT NULL,
+    listing_ID      INT NOT NULL,
+    category        VARCHAR(50),
+    product_title   VARCHAR(100),
+    product_name    VARCHAR(100),
+    product_desc    VARCHAR(100),
+    quantity        INT,
+    product_price   VARCHAR(20),
+    status          INT,
+    PRIMARY KEY (seller_email, listing_ID),
+    FOREIGN KEY (seller_email) REFERENCES Seller(seller_email)
+);
+
+CREATE TABLE Orders (
+    order_ID        INT PRIMARY KEY NOT NULL,
+    seller_email    VARCHAR(50) NOT NULL,
+    listing_ID      INT NOT NULL,
+    buyer_email     VARCHAR(50) NOT NULL,
+    date            DATE,
+    quantity        INT,
+    payment         INT,
+    FOREIGN KEY (seller_email) REFERENCES Seller(seller_email),
+    FOREIGN KEY (buyer_email) REFERENCES Buyer(buyer_email)
+);
+
+CREATE TABLE Address (
+    addr_ID         VARCHAR(50) PRIMARY KEY NOT NULL,
+    zipcode         INT,
+    street_num      INT,
+    street_name     VARCHAR(30)
+);
+
+CREATE TABLE Zipcode (
+    zipcode         INT PRIMARY KEY NOT NULL,
+    city            VARCHAR(30),
+    state           VARCHAR(2)
+);
+
+CREATE TABLE Requests (
+    request_ID      INT PRIMARY KEY NOT NULL,
+    sender_email    VARCHAR(50),
+    helpdesk_email  VARCHAR(50),
+    request_type    VARCHAR(50),
+    request_desc    VARCHAR(255),
+    request_status  INT,
+    FOREIGN KEY (sender_email) REFERENCES Users(email),
+    FOREIGN KEY (helpdesk_email) REFERENCES HelpDesk(email)
+);
+
+CREATE TABLE Reviews (
+    order_ID        INT PRIMARY KEY NOT NULL,
+    rate            INT,
+    review_desc     VARCHAR(255),
+    FOREIGN KEY (order_ID) REFERENCES Orders(order_ID)
+);
+
