@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request
 import sqlite3 as sql
-from hashlib import sha256
+#from hashlib import sha256
+import bcrypt
 
 app = Flask(__name__)
 
@@ -16,17 +17,47 @@ def index():
 @app.route('/login', methods = ['POST', 'GET'])
 def login():
     email = request.form['email']
-    encoded_email = email.encode('utf-8')
-    hashed_email = sha256(encoded_email)
-    hex_email = hashed_email.hexdigest()
 
     password = request.form['password']
-    encoded_password = password.encode('utf-8')
-    hashed_password = sha256(encoded_password)
-    hex_password = hashed_password.hexdigest()
+    salt = bcrypt.gensalt() #will strengthen the generated hash value
+    hashed_password = bcrypt.hashpw(password.encode('utf-8',salt))
 
-    pass
+    if check_email(email):
+        if check_password(email,hashed_password):
+            #navigate to next page
+            pass
+        else:
+            #notify that password is incorrect
+            pass
+    else:
+        #notify that email is incorrect
+        pass
 
+def check_email(email):
+    connection = sql.connect('database.db')
+    cursor = connection.cursor()
+    cursor.execute('SELECT COUNT(1) FROM Users WHERE email = ?', (email,))
+
+    result = cursor.fetchone()
+    connection.close()
+
+    if result and result[0] > 0: #check if cursor retrieved a row
+        return True
+    return False
+
+def check_password(email, hashed_password):
+    connection = sql.connect('database.db')
+    cursor = connection.cursor()
+    cursor.execute('SELECT password FROM Users WHERE email = ?', (email,))
+
+    result = cursor.fetchone()
+    connection.close()
+
+    if result:
+        return True
+    return False
+
+#IMPORTANT: all of this needs to be adjusted to fit assignment
 
 @app.route('/name', methods=['POST', 'GET'])
 # function for rendering all elements of input.html and its input form
