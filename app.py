@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, url_for, redirect
 import sqlite3 as sql
 #from hashlib import sha256
 import bcrypt
+import csv
 
 app = Flask(__name__)
 
@@ -61,6 +62,30 @@ def check_password(email, hashed_password):
     if bcrypt.checkpw(hashed_password,result[0]):
         return True
     return False
+
+
+#read Users.csv and hash passwords before inserting in sql table
+
+def hash_password(password):
+    salt = bcrypt.gensalt() #will strengthen the generated hash value
+    hashed_password = bcrypt.hashpw(password.encode('utf-8'),salt)
+    return hashed_password
+
+connect = sql.connect('database.db')
+cursor = connect.cursor()
+with open('Useres.csv', mode = 'r') as file:
+    csv = csv.DictReader(file)
+    for row in csv:
+        email = row['email']
+        password = row['password']
+
+        hashed_password = hash_password(password)
+
+        try:
+            cursor.execute('INSERT INTO Users (email,password) VALUES (?, ?)', (email,hashed_password))
+        except sql.IntegrityError: #if email already exists (assuming email is set as UNIQUE)
+            continue
+            
 
 if __name__ == "__main__":
     app.run()
