@@ -72,27 +72,30 @@ def hash_password(password):
     hashed_password = bcrypt.hashpw(password.encode('utf-8'),salt)
     return hashed_password
 
-connect = sql.connect('database.db')
-cursor = connect.cursor()
-with open('NittanyBusinessDataset_v3/Users.csv', mode = 'r', encoding = 'utf-8-sig') as file:
-    csv = csv.DictReader(file)
-    cursor.execute('CREATE TABLE IF NOT EXISTS Users(email CHAR(30) PRIMARY KEY, password CHAR(100));') #Note: Not to be confused with users table leftover from web exercise
 
-    connect.execute('BEGIN TRANSACTION;')
-    for row in csv:
-        email = row['email']
-        password = row['password']
+#Note: commenting database setup out because it takes 15-20 minutes to run and only needs to be done once
 
-        hashed_password = hash_password(password)
+#connect = sql.connect('database.db')
+#cursor = connect.cursor()
+#with open('NittanyBusinessDataset_v3/Users.csv', mode = 'r', encoding = 'utf-8-sig') as file:
+#    csv = csv.DictReader(file)
+#    cursor.execute('CREATE TABLE IF NOT EXISTS Users(email CHAR(30) PRIMARY KEY, password CHAR(100));') #Note: Not to be confused with users table leftover from web exercise
+
+#    connect.execute('BEGIN TRANSACTION;')
+#    for row in csv:
+#        email = row['email']
+#        password = row['password']
+
+#        hashed_password = hash_password(password)
         
-        try:
-            cursor.execute('INSERT INTO Users (email,password) VALUES (?, ?);', (email,hashed_password))
+#        try:
+#            cursor.execute('INSERT INTO Users (email,password) VALUES (?, ?);', (email,hashed_password))
             
             #cursor.execute('UPDATE users SET password = ? WHERE email = ?'(hashed_password,email))
-        except sql.IntegrityError: #if email already exists (assuming email is set as UNIQUE)
-            continue
+#        except sql.IntegrityError: #if email already exists (assuming email is set as UNIQUE)
+#            continue
     
-    connect.commit()
+#    connect.commit()
 
 if __name__ == "__main__":
     app.run()
