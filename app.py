@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, url_for, redirect
 import sqlite3 as sql
 #from hashlib import sha256
-import bcrypt
+import bcrypt #extremely slow for security reasons. consider tradeoff of speed vs security
 import csv
 
 app = Flask(__name__)
@@ -76,19 +76,23 @@ connect = sql.connect('database.db')
 cursor = connect.cursor()
 with open('NittanyBusinessDataset_v3/Users.csv', mode = 'r', encoding = 'utf-8-sig') as file:
     csv = csv.DictReader(file)
+    cursor.execute('CREATE TABLE IF NOT EXISTS Users(email CHAR(30) PRIMARY KEY, password CHAR(100));') #Note: Not to be confused with users table leftover from web exercise
+
+    connect.execute('BEGIN TRANSACTION;')
     for row in csv:
         email = row['email']
         password = row['password']
 
         hashed_password = hash_password(password)
-        cursor.execute('CREATE TABLE IF NOT EXISTS Users(email CHAR(30) PRIMARY KEY, password CHAR(100));') #Note: Not to be confused with users table leftover from web exercise
-
+        
         try:
             cursor.execute('INSERT INTO Users (email,password) VALUES (?, ?);', (email,hashed_password))
+            
             #cursor.execute('UPDATE users SET password = ? WHERE email = ?'(hashed_password,email))
         except sql.IntegrityError: #if email already exists (assuming email is set as UNIQUE)
             continue
-            
+    
+    connect.commit()
 
 if __name__ == "__main__":
     app.run()
