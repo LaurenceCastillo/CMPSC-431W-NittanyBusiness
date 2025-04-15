@@ -11,6 +11,7 @@ CREATE TABLE Seller (
     bank_accno      INT(8),
     balance         INT,
     FOREIGN KEY (seller_email) REFERENCES Users(email) ON DELETE CASCADE
+    FOREIGN KEY (seller_addr_ID) REFERENCES Address (addr_ID) ON DELETE CASCADE
 );
 
 CREATE TABLE Buyer (
@@ -18,6 +19,7 @@ CREATE TABLE Buyer (
     buyer_bname     VARCHAR(100),
     buyer_addr_ID   VARCHAR(50),
     FOREIGN KEY (buyer_email) REFERENCES Users(email) ON DELETE CASCADE
+    FOREIGN KEY (buyer_addr_ID) REFERENCES Address (addr_ID) ON DELETE CASCADE
 );
 
 CREATE TABLE HelpDesk (
@@ -37,7 +39,14 @@ CREATE TABLE Products (
     product_price   VARCHAR(20),
     status          INT,
     PRIMARY KEY (seller_email, listing_ID),
-    FOREIGN KEY (seller_email) REFERENCES Seller(seller_email)
+    FOREIGN KEY (seller_email) REFERENCES Seller(seller_email),
+    FOREIGN KEY (category) REFERENCES Categories(category_name)
+
+);
+
+CREATE TABLE Categories (
+    parent_category VARCHAR(100),
+    category_name PRIMARY KEY NOT NULL
 );
 
 CREATE TABLE Orders (
@@ -57,6 +66,7 @@ CREATE TABLE Address (
     zipcode         INT,
     street_num      INT,
     street_name     VARCHAR(30)
+    FOREIGN KEY (zipcode) REFERENCES Zipcode (zipcode) 
 );
 
 CREATE TABLE Zipcode (
@@ -81,5 +91,15 @@ CREATE TABLE Reviews (
     rate            INT,
     review_desc     VARCHAR(255),
     FOREIGN KEY (order_ID) REFERENCES Orders(order_ID)
+);
+
+CREATE TABLE Credit_Cards (
+    credit_card_num INT PRIMARY KEY NOT NULL,
+    card_type       VARCHAR(30),
+    expire_month    INT CHECK (expire_month BETWEEN 1 AND 12),
+    expire_year     INT,
+    security_code   INT,
+    owner_email     VARCHAT(50),
+    FOREIGN KEY (owner_email) REFERENCES Buyer (buyer_email)
 );
 
