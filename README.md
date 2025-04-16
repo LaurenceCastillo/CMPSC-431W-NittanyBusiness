@@ -1,4 +1,4 @@
-# CMPSC-341W-NittanyBusiness
+# CMPSC-431W-NittanyBusiness
 
 ## Description
 The following files are for the Phase 2 Progress Review for CMPSC 431W. It provides the user a login page for which the user can enter an email and password before pressing the "Log In" button, which then then checks whether the username and password exist in the local database. 
