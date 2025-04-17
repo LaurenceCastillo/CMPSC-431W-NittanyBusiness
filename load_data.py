@@ -18,38 +18,42 @@ with sql.connect('database.db') as connection:
 
             table = path[:-4] #remove .csv extension 
             for row in reader:
-                if table == 'Address':
-                    cursor.execute('INSERT OR IGNORE INTO Address VALUES (?, ?, ?, ?)', row) #OR IGNORE prevents an exception from being raised if primary key already exists (cancells insertion of row)
+                if table == 'Address': #remember to clear tables if there is an error in running this file
+                    cursor.execute('INSERT INTO Address VALUES (?, ?, ?, ?)', row) #put OR IGNORE after done testing.
                     
                 elif table == 'Buyers':
-                    cursor.execute('INSERT OR IGNORE INTO Buyer VALUES (?, ?, ?)', row)
+                    cursor.execute('INSERT INTO Buyer VALUES (?, ?, ?)', row)
                     
                 elif table == 'Categories':
-                    cursor.execute('INSERT OR IGNORE INTO Categories VALUES (?, ?)', row)
+                    cursor.execute('INSERT INTO Categories VALUES (?, ?)', row)
                     
-                elif table == 'Credit_Card': #TO DO: remove '-' from credit card numbers
-                    cursor.execute('INSERT OR IGNORE INTO Credit_Cards VALUES (?, ?, ?, ?, ?, ?)', row) 
+                elif table == 'Credit_Cards': #TO DO: remove '-' from credit card numbers
+
+                    row[0] = int(row[0].replace('-','')) #int matches schema and is faster to process
+                    cursor.execute('INSERT INTO Credit_Cards VALUES (?, ?, ?, ?, ?, ?)', row) 
 
                 elif table == 'Helpdesk': #
-                    cursor.execute('INSERT OR IGNORE INTO HelpDesk VALUES (?, ?)', row)
+                    cursor.execute('INSERT INTO HelpDesk VALUES (?, ?)', row)
                     
                 elif table == 'Orders':
-                    cursor.execute('INSERT OR IGNORE INTO Orders VALUES (?, ?, ?, ?, ?, ?, ?)', row)
+                    cursor.execute('INSERT INTO Orders VALUES (?, ?, ?, ?, ?, ?, ?)', row)
                     
                 elif table == 'Product_Listings': #TO DO: Remove '$' from Product_Price column
-                    cursor.execute('INTO OR IGNORE INTO Products VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', row)
+
+                    row[8] = int(row[8].replace('$','')) #SCHEMA HAS PRICE AS VARCHAR: WILL RAISE ERROR. CONSIDER CHANGING SCHEMA OR OMITT THIS LINE
+                    cursor.execute('INSERT INTO Products VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', row)
                     
                 elif table == 'Requests':
-                    cursor.execute('INSERT OR IGNORE INTO Requests VALUES (?, ?, ?)', row)
+                    cursor.execute('INSERT INTO Requests VALUES (?, ?, ?)', row)
 
                 elif table == 'Reviews':
-                    cursor.execute('INSERT OR IGNORE INTO Reviews VALUES (?, ?, ?)', row)
+                    cursor.execute('INSERT INTO Reviews VALUES (?, ?, ?)', row)
                     
-                elif table == 'Sellers': #TO DO: remove '-' from bank_account_number
-                    cursor.execute('INSERT OR IGNORE INTO Seller VALUES (?, ?, ?, ?, ?, ?)')
+                elif table == 'Sellers': #DISCUSS IF WE WANT TO KEEP ROUTING NUMBER AS A VARCHAR OR CHANGE TO INT
+                    cursor.execute('INSERT INTO Seller VALUES (?, ?, ?, ?, ?, ?)')
 
                 #elif table == 'Users': #Users were already hashed and inserted during the progress check, make sure to hash if using this line again
                 #    cursor.execute('INSERT OR IGNORE INTO Users VALUES (?, ?)', row)
 
                 elif table == 'Zipcode_Info':
-                    cursor.execute('INSERT OR IGNORE INTO Zipcode VALUES (?, ?, ?)', row)
+                    cursor.execute('INSERT INTO Zipcode VALUES (?, ?, ?)', row)
