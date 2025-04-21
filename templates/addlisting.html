@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='addlisting.css') }}">
+    <meta charset="UTF-8">
+    <title>Add A Listing</title>
+</head>
+<body>
+    <div class="navbar">
+        <a href="/dashboard" id="navhome">Home</a>
+        <div class="middle-container">
+            <a href="/addlisting" id = "productLink" class = "navbar-link">Add New Product</a>
+            <a href="/managelistings" id = "manageLink" class = "navbar-link">Manage Your Listings</a>
+        </div>
+        <div class="dropdown" id="dropdownAcct">
+            <button class="dropbtn" id="dropbtnAcct">Account<i class="arrow"></i></button>
+            <div class="dropdown-content" id="contentAcct">
+                <br />
+                <a href="/sellersettings" id = "acctdropops">Settings</a>
+                <div id="droplogout-container">
+                    <a href="/logout" id="droplogout">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br>
+
+    <form action="/addlisting" method="POST">
+        <div class="formarea">
+            <div class="formrow-container">
+                <label>Listing ID:</label>
+                <input type="text" readonly="readonly" value="{{ listingid }}" name="listingid">
+            </div>
+            <br />
+            <br />
+            <div class="formrow-container">
+                <label>Category:</label>
+                <select name="categoryval" class="addoptdrop">
+                    {% for category_name in cats %}
+                        <option value="{{ category_name }}"> {{ category_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <br>
+            <br>
+            <div class="formrow-container">
+                <label>Auction Title:</label>
+                <input type="text" class="addTxtbox" name="auctiontitleval">
+            </div>
+            <br>
+            <br>
+            <div class="formrow-container">
+                <label>Product Name:</label>
+                <input type="text" class="addTxtbox" name="productnameval">
+            </div>
+            <br>
+            <br>
+            <div class="formrow-container">
+                <label>Product Description:</label>
+                <input type="text" class="addTxtbox" name="productdescval">
+            </div>
+            <br>
+            <br>
+            <div class="formrow-container">
+                <label>Quantity:</label>
+                <input type="text" class="addTxtbox" name="quantityval">
+            </div>
+            <br>
+            <br>
+            <div class="formrow-container">
+                <label>Reserve Price:</label>
+                <input type="text" class="addTxtbox" name="reservepriceval">
+            </div>
+            <br />
+            <br />
+            <div class="formrow-container">
+                <label>Max Bids:</label>
+                <input type="text" class="addTxtbox" name="maxbidsval">
+            </div>
+            <br />
+            <br />
+            <input type="submit" id="addsubmit" value="Add" onclick="submitToController()">
+        </div>
+    </form>
+
+</body>
+</html>

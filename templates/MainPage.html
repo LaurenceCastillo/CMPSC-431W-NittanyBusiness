@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>NittanyStore Portal</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='portal.css') }}">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+        }
+        h1 {
+            color: #343a40;
+        }
+        .role-options {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 2rem;
+            gap: 1.5rem;
+        }
+        .role-btn {
+            background-color: #007bff;
+            color: white;
+            padding: 1rem 2.5rem;
+            text-decoration: none;
+            font-size: 1.2rem;
+            border-radius: 8px;
+            transition: background-color 0.3s, transform 0.2s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .role-btn:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to NittanyStore!</h1>
+        <p>Please choose your destination:</p>
+        <div class="role-options">
+            <a href="/sellerpage" class="role-btn">Go to Seller Page</a>
+            <a href="/buyerpage" class="role-btn">Go to Buyer Page</a>
+            <a href="/helpdeskpage" class="role-btn">Go to Helpdesk Page</a>
+        </div>
+    </div>
+</body>
+</html>

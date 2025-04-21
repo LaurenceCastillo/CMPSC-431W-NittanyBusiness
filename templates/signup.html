@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Signup</title>
+    <style>
+        body{
+            background: linear-gradient(100.1deg, darkslategrey 24.6%, cadetblue 108.2%);
+            font-family: Arial;
+        }
+
+        input[type=text]{
+            padding: 5px 5px;
+            border: solid #ccc;
+            transition: 0.5s;
+            font-size: 16px;
+            width: 50%;
+            float: right;
+            font-family: Arial;
+            border-radius: 10px;
+        }
+
+        input[type=text]:focus{
+            border: solid #555;
+        }
+
+        .log-btn{
+            border:none;
+            padding: 10px 20px;
+            width: 20%;
+            cursor: pointer;
+            background-color: green;
+            color: white;
+            font-size: 14px;
+            transition: 0.3s;
+            border-radius: 5px;
+        }
+
+        .log-btn:hover{
+            opacity:0.8;
+            transition: 0.3s;
+        }
+
+        .formarea{
+            border: 5px solid darkslategrey;
+            padding:5px;
+            background-color: #dadada;
+            width: 40em;
+        }
+
+        .formrow-container {
+            display: block;
+        }
+
+        form label {
+            padding: 5px 5px;
+            text-align: right;
+            display: inline-block;
+        }
+
+        .imp-txt{
+            color: indianred;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <p>Already a user? <a href="/" style="color: green;">Login here!</a></p>
+    <p class="imp-txt">{{ error }}</p>
+    <form action="/signup" method="POST" class="formarea">
+        <div class="formrow-container">
+            <label>Email ID: </label>
+            <input type="text" name="email">
+        </div>
+        <br>
+        <br>
+        <div class="formrow-container">
+            <label>Password: </label>
+            <input type="text" name="pass">
+        </div>
+        <br>
+        <br>
+        <h3>Personal Information</h3>
+        <div class="formrow-container">
+            <label>First Name: </label>
+            <input type="text" name="firstname">
+        </div>
+        <br>
+        <br>
+        <div class="formrow-container">
+            <label>Last Name: </label>
+            <input type="text" name="lastname">
+        </div>
+        <br>
+        <br>
+        <div class="formrow-container">
+            <label>Gender: </label>
+            <input type="text" name="gender">
+        </div>
+        <br>
+        <br>
+        <div class="formrow-container">
+            <label>Age: </label>
+            <input type="text" name="age">
+        </div>
+        <br>
+        <br>
+        <div class="formrow-container">
+            <label>Major: </label>
+            <input type="text" name="major">
+        </div>
+        <br>
+        <br>
+
+        <h3>Home Address</h3>
+        <div class="formrow-container">
+            <label>Street Name: </label>
+            <input type="text" name="streetname">
+        </div>
+        <br>
+        <br>
+        <div class="formrow-container">
+            <label>Street Num: </label>
+            <input type="text" name="streetnum">
+        </div>
+        <br>
+        <br>
+        <div class="formrow-container">
+            <label>Zipcode: </label>
+            <input type="text" name="zipcode">
+        </div>
+        <br>
+        <br>
+
+        <h3>Credit Card Details</h3>
+        <div class="formrow-container">
+            <label>Credit Card Number: </label>
+            <input type="text" name="cardnum">
+        </div>
+        <br>
+        <br>
+        <div class="formrow-container">
+            <label>Card Type: </label>
+            <input type="text" name="cardtype">
+        </div>
+        <br>
+        <br>
+        <div class="formrow-container">
+            <label>Expiry Month: </label>
+            <input type="text" name="expiremonth">
+        </div>
+        <br>
+        <br>
+        <div class="formrow-container">
+            <label>Expiry Year: </label>
+            <input type="text" name="expireyear">
+        </div>
+        <br>
+        <br>
+        <div class="formrow-container">
+            <label>Security Code: </label>
+            <input type="text" name="seccode">
+        </div>
+        <br>
+        <br>
+        <button type="submit" class="log-btn">Signup</button>
+    </form>
+</body>
+</html>
