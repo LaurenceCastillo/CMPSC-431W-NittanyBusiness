@@ -6,110 +6,67 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
           integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <title>User Registration | NittanyBusiness</title>
+
+    <style>
+    .signup-form {
+        padding: 50px;
+    }
+    </style>
+
 </head>
 
 
 <body>
-    <p>Already a user? <a href="/" style="color: green;">Login here!</a></p>
-    <p class="imp-txt">{{ error }}</p>
-    <form action="/signup" method="POST" class="formarea">
-        <div class="formrow-container">
-            <label>Email ID: </label>
-            <input type="text" name="email">
-        </div>
-        <br>
-        <br>
-        <div class="formrow-container">
-            <label>Password: </label>
-            <input type="text" name="pass">
-        </div>
-        <br>
-        <br>
-        <h3>Personal Information</h3>
-        <div class="formrow-container">
-            <label>First Name: </label>
-            <input type="text" name="firstname">
-        </div>
-        <br>
-        <br>
-        <div class="formrow-container">
-            <label>Last Name: </label>
-            <input type="text" name="lastname">
-        </div>
-        <br>
-        <br>
-        <div class="formrow-container">
-            <label>Gender: </label>
-            <input type="text" name="gender">
-        </div>
-        <br>
-        <br>
-        <div class="formrow-container">
-            <label>Age: </label>
-            <input type="text" name="age">
-        </div>
-        <br>
-        <br>
-        <div class="formrow-container">
-            <label>Major: </label>
-            <input type="text" name="major">
-        </div>
-        <br>
-        <br>
 
-        <h3>Home Address</h3>
-        <div class="formrow-container">
-            <label>Street Name: </label>
-            <input type="text" name="streetname">
-        </div>
-        <br>
-        <br>
-        <div class="formrow-container">
-            <label>Street Num: </label>
-            <input type="text" name="streetnum">
-        </div>
-        <br>
-        <br>
-        <div class="formrow-container">
-            <label>Zipcode: </label>
-            <input type="text" name="zipcode">
-        </div>
-        <br>
-        <br>
+    <h1 style="text-align:center;">User Registration Page</h1>
 
-        <h3>Credit Card Details</h3>
-        <div class="formrow-container">
-            <label>Credit Card Number: </label>
-            <input type="text" name="cardnum">
-        </div>
-        <br>
-        <br>
-        <div class="formrow-container">
-            <label>Card Type: </label>
-            <input type="text" name="cardtype">
-        </div>
-        <br>
-        <br>
-        <div class="formrow-container">
-            <label>Expiry Month: </label>
-            <input type="text" name="expiremonth">
-        </div>
-        <br>
-        <br>
-        <div class="formrow-container">
-            <label>Expiry Year: </label>
-            <input type="text" name="expireyear">
-        </div>
-        <br>
-        <br>
-        <div class="formrow-container">
-            <label>Security Code: </label>
-            <input type="text" name="seccode">
-        </div>
-        <br>
-        <br>
-        <button type="submit" class="log-btn">Signup</button>
-    </form>
+    <div class="signup-form">
+        <form action="/signup" method="POST" class="formrows">
+
+            <div class="accinfo-container">
+                <h5>Account information </h5>
+                <input type="text" style="width:300px" name="email" placeholder="Email">
+                <br><br>
+                <input type="text" style="width:300px" name="pass" placeholder="Password">
+            </div>
+            <br><br>
+
+            <div class="businessinfo-container">
+                <h5>Business information </h5>
+                <input type="text" style="width:500px" name="bname" placeholder="Business name">
+                <br><br>
+                <input type="text" style="width:100px" name="bzipcode" placeholder="ZIP code">
+                <input type="text" style="width:100px" name="bstreetnum" placeholder="Street num">
+                <input type="text" style="width:200px" name="bstreetname" placeholder="Street name">
+            </div>
+            <br><br>
+
+            <div class="cardinfo-container">
+                <h5>Credit Card information </h5>
+                <input type="text" style="width:400px" name="routnum" placeholder="Bank routing number">
+                <br><br>
+                <input type="text" style="width:400px" name="accnum" placeholder="Bank account number">
+                <br><br>
+                <input type="text" style="width:100px" name="cardtype" placeholder="Card type">
+                <input type="text" style="width:100px" name="expmonth" placeholder="Expr. month (i.e. 12)">
+                <input type="text" style="width:100px" name="expyear" placeholder="Expr. year (i.e. 2030)">
+                <input type="text" style="width:100px" name="seccode" placeholder="Security code">
+            </div>
+            <br><br>
+            {#PLEASE CHANGE THIS TO MAKE IT LOOK BETTER!!!!#}
+
+            <button type="submit" class="btn btn-primary">Register as Seller</button>
+            <button type="submit" class="btn btn-primary">Register as Buyer</button>
+            <button type="submit" class="btn btn-primary">Register as Helpdesk</button>
+            <br><br>
+
+            <p>Only the Account information is required if you wish to register as a Helpdesk staff. </p>
+            <p>Already a user? <a href="/">Sign in here!</a></p>
+            <p class="imp-txt">{{ error }}</p>
+
+            <br><br><br><br><br>
+        </form>
+    </div>
 </body>
 
 <!-- Imported bootstrap scripts -->
@@ -124,3 +81,30 @@
         crossorigin="anonymous"></script>
 
 </html>
+
+<!-- TO DO -->
+
+{#
+- As specified in Item #7 in the requirements, user will specify their intended role on registration.
+- Make a dropdown menu (modal) so that the user can select what role they want.
+
+Required information for each role (CHECK THE DATASET.):
+- Sellers:
+    - Business name (stored in Sellers.csv)
+    - Business zip code (stored in Address.csv)
+    - Business street num (stored in Address.csv)
+    - Business street name (stored in Address.csv)
+    - Bank routing number (stored in Sellers.csv, Credit_Cards.csv)
+    - Bank account number (stored in Sellers.csv, , Credit_Cards.csv)
+    - Bank account card type (stored in Credit_Cards.csv)
+    - Bank account expire month (stored in Credit_Cards.csv)
+    - Bank account expire year (stored in Credit_Cards.csv)
+    - Bank account security code (stored in Credit_Cards.csv)
+
+I don't think Helpdesk needs additional fields.
+If this feature should be done differently, please feel free to do it differently.
+For creating the additional boxes, simply copy the input fields I have made above
+    and change the details accordingly.
+
+
+#}
