@@ -1,69 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
-    <meta charset="UTF-8">
-    <title>Signup</title>
-    <style>
-        body{
-            background: linear-gradient(100.1deg, darkslategrey 24.6%, cadetblue 108.2%);
-            font-family: Arial;
-        }
-
-        input[type=text]{
-            padding: 5px 5px;
-            border: solid #ccc;
-            transition: 0.5s;
-            font-size: 16px;
-            width: 50%;
-            float: right;
-            font-family: Arial;
-            border-radius: 10px;
-        }
-
-        input[type=text]:focus{
-            border: solid #555;
-        }
-
-        .log-btn{
-            border:none;
-            padding: 10px 20px;
-            width: 20%;
-            cursor: pointer;
-            background-color: green;
-            color: white;
-            font-size: 14px;
-            transition: 0.3s;
-            border-radius: 5px;
-        }
-
-        .log-btn:hover{
-            opacity:0.8;
-            transition: 0.3s;
-        }
-
-        .formarea{
-            border: 5px solid darkslategrey;
-            padding:5px;
-            background-color: #dadada;
-            width: 40em;
-        }
-
-        .formrow-container {
-            display: block;
-        }
-
-        form label {
-            padding: 5px 5px;
-            text-align: right;
-            display: inline-block;
-        }
-
-        .imp-txt{
-            color: indianred;
-            font-size: 14px;
-        }
-    </style>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <title>User Registration | NittanyBusiness</title>
 </head>
+
+
 <body>
     <p>Already a user? <a href="/" style="color: green;">Login here!</a></p>
     <p class="imp-txt">{{ error }}</p>
