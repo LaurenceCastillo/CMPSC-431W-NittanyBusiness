@@ -22,8 +22,17 @@ def login():
 
         if check_email(email):  # check if email is in Users table
             if check_password(email, password):  # verify password
-                return render_template('landing.html')  # redirect to next page
-                # return redirect(url_for('filler'))  #redirect to next page
+                #return render_template('landing.html')  # redirect to next page
+                
+                # direct to page depending on role
+                role =  get_role(email)
+                if role == 'Buyer':
+                    return render_template('buyer.html')
+                elif role == 'Seller':
+                    return render_template('seller.html')
+                elif role == 'Help Desk':
+                    return render_template('helpdesk.html')
+
             else:
                 error = 'Incorrect password. Please try again.'
                 return render_template('login.html', error=error)
@@ -73,6 +82,37 @@ def hash_password(password):
     salt = bcrypt.gensalt()  # will strengthen the generated hash value
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
     return hashed_password
+
+def get_role(email): # this function assumes that each user only has one role
+    #NOTE untested
+
+    with sql.connect('database.db') as connection:
+        cursor = connection.cursor()
+
+        #cursor.execute('SELECT email FROM Users WHERE email = ?',(email,))
+        #result = cursor.fetchone()
+        #stored_email = result[0]
+
+        cursor.execute('SELECT buyer_email FROM Buyer WHERE buyer_email = ?',(email,))
+        result = cursor.fetchone()
+        stored_buyer = result[0]
+        if stored_buyer > 0:
+            return 'Buyer'
+
+        cursor.execute('SELECT seller_email FROM Seller WHERE seller_email = ?',(email,))
+        result = cursor.fetchone()
+        stored_seller = result[0]
+        if stored_seller > 0:
+            return 'Seller'
+
+        cursor.execute('SELECT email FROM HelpDesk WHERE email = ?',(email,))
+        result = cursor.fetchone()
+        stored_helpdesk = result[0]
+        if stored_helpdesk > 0:
+            return 'Help Desk'
+        
+    return None # if code isn't working as intended
+
 
 
 # Note: commenting database setup out because it takes 15-20 minutes to run and only needs to be done once
