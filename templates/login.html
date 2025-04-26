@@ -9,12 +9,20 @@
 
     <style>
     .btn-login {
-      display: block;
-      margin-left: auto;
-      margin-right: auto;
-      width: 40%;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 40%;
+    }
+
+    {#.container-sm {#}
+    {#     text-align: center;#}
+
+    input {
+        width: 100%;
     }
     </style>
+
 </head>
 
 <body>
@@ -22,15 +30,19 @@
 <div class="container-sm">
 
     <h1 style="text-align:center;">NittanyBusiness Login Page</h1>
+
     <form action="/login" method="POST" class="form-group">
         <div class="container" style="width: 350px;">
             <br>
-            <h4 style="text-align: center;">Welcome back!</h4>
+            <br>
+            <h4 style="text-align:center;">Welcome back!</h4>
             
             <div class="userid-container">
                 <label for="email" class="required">Username</label>
                 <input type="text" id="email" name="email" required class="logintxt-container"/>
             </div>
+
+            <br>
             
             <div class="pswd-container">
                 <label for="password" class="required">Password</label>
@@ -40,14 +52,17 @@
             {% if error %}
                 <p class="imp-txt" style="color:red;">{{ error }}</p>
             {% endif %}
+
+            <br>
             
-            <div class="btn-login">
+            <div style="text-align:center;" class="btn-login">
                 <button type="submit" id="login" class="btn btn-primary">Log In</button>
             </div>
 
             <br>
+            <br>
             
-            <div class="signuptxt-container">
+            <div style="text-align:center;" class="signuptxt-container">
                 <label id="signupTxt">New to NittanyStore? <a href="/signup">Sign up here!</a></label>
             </div>
         </div>
@@ -70,4 +85,5 @@
 
 <!-- Brush-up done! -->
 
-<!-- Example account: o5mrsfw0@nittybiz.com	TbIF16hoUqGl -->
+{# Use this account from dataset to log in!! #}
+{# o5mrsfw0@nittybiz.com	TbIF16hoUqGl #}
