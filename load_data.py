@@ -61,4 +61,4 @@ with sql.connect('database.db') as connection:
         
 connection.commit()
 
-# how to merge main (the real deal) and master (stuff on my end)
+# how to merge main and master
