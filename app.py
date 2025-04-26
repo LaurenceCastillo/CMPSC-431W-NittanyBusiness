@@ -48,6 +48,24 @@ def login():
 def signup():
     return render_template('signup.html')
 
+@app.route('/categories', methods=['POST', 'GET']) #should be repeatedly called when clicking on subcategories
+#start with root node "All"
+#after clicking, display all top level categories
+def categories():
+    if request.method == 'GET': #Show root node "All" after navigating from the landing page
+        return render_template('categories.html')
+
+    else: #if POST, display subcategories/products
+        category = request.form['category']
+
+        with sql.connect('database.db') as connection:
+            cursor = connection.cursor()
+            cursor.execute('SELECT category_name FROM Categories WHERE parent_category = ?'(category,))
+            cursor.execute('SELECT product_title FROM Products WHERE category = ?'(category,))
+
+            categories_products = cursor.fetchall #TODO check if this code actually works. I haven't tested it yet.
+    return render_template('categories.html', categories_prodcts = categories_products)
+
 
 # does email exist in Users
 def check_email(email):
