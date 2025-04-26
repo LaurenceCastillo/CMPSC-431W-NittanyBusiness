@@ -20,7 +20,7 @@ def login():
 
         if check_email(email): #check if email is in Users table
             if check_password(email, password): #verify password
-                return redirect(url_for('filler'))  #redirect to next page
+                return redirect(url_for('landing'))  #redirect to next page
             else:
                 error = 'Incorrect password. Please try again.'
                 return render_template('login.html', error=error)
@@ -31,8 +31,8 @@ def login():
         return render_template('login.html')
 
 #dummy page meant to demonstrate successful login
-@app.route('/filler', methods=['POST', 'GET'])
-def filler():
+@app.route('/landing', methods=['POST', 'GET'])
+def landing():
     return "Login successful!"
 
 #does email exist in Users
