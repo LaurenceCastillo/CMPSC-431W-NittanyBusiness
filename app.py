@@ -14,7 +14,7 @@ def index():
     return render_template('login.html')
 
 
-# login button
+# TASK 1: LOGIN
 @app.route('/login', methods=['POST', 'GET'])
 def login():
     if request.method == 'POST':
@@ -112,6 +112,7 @@ def get_role(email): #this function assumes that each user only has one role
 def signup():
     return render_template('signup.html')
 
+#TASK 2: CATEGORY HEIRARCHY
 @app.route('/categories', methods=['POST', 'GET']) #should be repeatedly called when clicking on subcategories
 def categories():
     if request.method == 'GET': #Initial navigation to page.
@@ -129,7 +130,8 @@ def categories():
             categories_products = cursor.fetchall #TODO check if this code actually works. I haven't tested it yet.
     return render_template('categories.html', categories_prodcts = categories_products)
 
-@app.route('/view_products', methods = ['POST','GET'])
+#TASK 3: PRODUCT LISTING MANAGEMENT
+@app.route('/manage_products', methods = ['POST','GET'])
 def view_products():
 
     with sql.connect('database.db') as connection:
@@ -150,7 +152,7 @@ def add_listing(): #TODO: ADJUST addlisting.html to fit the schema
         product_description = request.form['product_description']
         quantity = request.form['quantity']
         price = request.form['price']
-        status = 1
+        status = 1 #status 1 indicates active
         
         with sql.connect('database.db') as connection:
             cursor = connection.cursor()
@@ -167,9 +169,54 @@ def remove_listing():
         
         with sql.connect('database.db') as connection:
             cursor = connection.cursor()
-            cursor.execute('DELETE FROM Products WHERE listing_ID = ?'(id,))
+            cursor.execute('UPDATE Products SET status = 0 WHERE listing_ID = ?',(id,)) #status 0 indicates inactive
             connection.commit()
     return render_template('removelisting.html')
+
+
+#TASK 4: ORDER MANAGEMENT
+@app.route('/product_info', methods = ['POST', 'GET'])
+def product_info():
+    id = request.form['listing_id']
+    with sql.connect('database.db') as connection:
+        cursor = connection.cursor()
+        cursor.execute('SELECT * FROM Products WHERE listing_ID = ?'(id,))
+        info = cursor.fetchall
+    return render_template('product_info.html', info = info)
+
+
+@app.route('/review_order', methods = ['POST', 'GET'])
+def place_order():
+    id = request.form['listing_id']
+    requested_quantity = request.form['quantity']
+    price = request.form['product_price']
+    total = requested_quantity * int(price) #because price is stored as varchar
+
+    with sql.connect('database.db') as connection: #TODO: consider implementing a way to prevent user from buying more than available quantity
+        cursor = connection.cursor()
+        cursor.execute('SELECT * FROM Products WHERE listing_ID = ?'(id,))
+        info = cursor.fetchall
+
+    return render_template('secure_checkout.html', info = info, total = total, quantity = requested_quantity)
+
+@app.route('/secure_checkout', methods = ['POST', 'GET']) #TODO: COMPLETE FUNCTION
+def secure_checkout():
+    id = request.form['listing_id']
+    requested_quantity = request.form['quantity']
+    price = request.form['product_price']
+    total = requested_quantity * int(price) #because price is stored as varchar
+
+    with sql.connect('database.db') as connection: #TODO: consider implementing a way to prevent user from buying more than available quantity
+        cursor = connection.cursor()
+        cursor.execute('UPDATE Products SET quantity = quantity - 1 WHERE listing_ID = ?',(id,))
+        cursor.execute('UPDATE Products SET status = 2 WHERE listing_id = ? AND quantity = quantity - ?',(id, requested_quantity))
+        cursor.execute('SELECT * FROM Products WHERE listing_ID = ?'(id,))
+        info = cursor.fetchall
+        connection.commit()    
+
+
+
+    pass
 
 # Note: commenting database setup out because it takes 15-20 minutes to run and only needs to be done once
 
