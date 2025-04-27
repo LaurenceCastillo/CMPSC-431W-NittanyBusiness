@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Products</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='manageproducts.css') }}">
+    <style>
+        body {
+            background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%);
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .navbar {
+            background-color: #003366;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin: 0 1rem;
+            font-weight: bold;
+        }
+        .navbar a:hover {
+            text-decoration: underline;
+        }
+        .container {
+            padding: 2rem;
+        }
+        table {
+            width: 90%;
+            margin: 2rem auto;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 1rem;
+            text-align: center;
+            border-bottom: 1px solid #ccc;
+        }
+        th {
+            background-color: #003366;
+            color: white;
+        }
+        .btn {
+            background-color: #003366;
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 1rem;
+            margin: 0.2rem;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background-color: #0055a5;
+        }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <div>
+        <a href="/sellerpage">Back</a>
+        <a href="/dashboard">Home</a>
+    </div>
+    <div>
+        <a href="/addproduct">Add New Product</a>
+        <a href="/logout">Logout</a>
+    </div>
+</div>
+
+<div class="container">
+    <h1 style="text-align:center;">Manage Your Products</h1>
+
+    {% if products %}
+    <table>
+        <tr>
+            <th>Product Title</th>
+            <th>Price</th>
+            <th>Quantity Available</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+        {% for product in products %}
+        <tr>
+            <td>{{ product.title }}</td>
+            <td>${{ product.price }}</td>
+            <td>{{ product.quantity }}</td>
+            <td>
+                {% if product.quantity > 0 %}
+                    Active
+                {% else %}
+                    Sold Out
+                {% endif %}
+            </td>
+            <td>
+                <a href="/editproduct/{{ product.id }}" class="btn">Edit Product</a>
+                <a href="/deleteproduct/{{ product.id }}" class="btn">Delete Product</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+    <p style="text-align:center;">You have no products added yet.</p>
+    {% endif %}
+</div>
+
+</body>
+</html>

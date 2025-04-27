@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add New Product</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='addproduct.css') }}">
+    <style>
+        body {
+            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .navbar {
+            background-color: #003366;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .navbar-left {
+            display: flex;
+            align-items: center;
+        }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin: 0 1rem;
+            font-weight: bold;
+        }
+        .navbar a:hover {
+            text-decoration: underline;
+        }
+        .container {
+            background-color: white;
+            margin: 3rem auto;
+            padding: 2rem;
+            width: 50%;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .formrow-container {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 1.5rem;
+        }
+        label {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        input[type="text"], select {
+            padding: 0.8rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        input[type="submit"] {
+            background-color: #003366;
+            color: white;
+            padding: 0.8rem 2rem;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            display: block;
+            margin: 2rem auto 0;
+        }
+        input[type="submit"]:hover {
+            background-color: #0055a5;
+        }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <div class="navbar-left">
+        <a href="/sellerpage">Back</a>
+        <a href="/dashboard">Home</a>
+    </div>
+    <div>
+        <a href="/manageproducts">Manage Products</a>
+        <a href="/logout">Logout</a>
+    </div>
+</div>
+
+<div class="container">
+    <h1 style="text-align: center;">Add New Product</h1>
+    <form action="/addproduct" method="POST">
+        <div class="formrow-container">
+            <label>Product Title:</label>
+            <input type="text" name="producttitle" required>
+        </div>
+        <div class="formrow-container">
+            <label>Product Description:</label>
+            <input type="text" name="productdesc" required>
+        </div>
+        <div class="formrow-container">
+            <label>Category:</label>
+            <select name="category" required>
+                {% for category_name in categories %}
+                    <option value="{{ category_name }}">{{ category_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="formrow-container">
+            <label>Price (per unit):</label>
+            <input type="text" name="price" required>
+        </div>
+        <div class="formrow-container">
+            <label>Quantity Available:</label>
+            <input type="text" name="quantity" required>
+        </div>
+        <input type="submit" value="Publish Product">
+    </form>
+</div>
+
+</body>
+</html>
