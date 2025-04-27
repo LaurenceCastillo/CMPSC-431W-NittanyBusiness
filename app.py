@@ -7,6 +7,7 @@ app = Flask(__name__)
 host = 'http://127.0.0.1:5000/'
 
 
+email = None #so that email can be referenced later on other pages
 # home page immediately renders login page
 @app.route('/')
 def index():
@@ -24,7 +25,7 @@ def login():
             if check_password(email, password):  # verify password
                 #return render_template('landing.html')  # redirect to next page
                 
-                # direct to page depending on role
+                #direct to page depending on role
                 role =  get_role(email)
                 if role == 'Buyer':
                     return render_template('buyer.html')
@@ -41,31 +42,6 @@ def login():
             return render_template('login.html', error=error)
     else:
         return render_template('login.html')
-
-
-# make link to signup page
-@app.route('/signup', methods=['POST', 'GET'])
-def signup():
-    return render_template('signup.html')
-
-@app.route('/categories', methods=['POST', 'GET']) #should be repeatedly called when clicking on subcategories
-#start with root node "All"
-#after clicking, display all top level categories
-def categories():
-    if request.method == 'GET': #Show root node "All" after navigating from the landing page
-        return render_template('categories.html')
-
-    else: #if POST, display subcategories/products
-        category = request.form['category']
-
-        with sql.connect('database.db') as connection:
-            cursor = connection.cursor()
-            cursor.execute('SELECT category_name FROM Categories WHERE parent_category = ?'(category,))
-            cursor.execute('SELECT product_title FROM Products WHERE category = ?'(category,))
-
-            categories_products = cursor.fetchall #TODO check if this code actually works. I haven't tested it yet.
-    return render_template('categories.html', categories_prodcts = categories_products)
-
 
 # does email exist in Users
 def check_email(email):
@@ -101,7 +77,7 @@ def hash_password(password):
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
     return hashed_password
 
-def get_role(email): # this function assumes that each user only has one role
+def get_role(email): #this function assumes that each user only has one role
     #NOTE untested
 
     with sql.connect('database.db') as connection:
@@ -131,7 +107,69 @@ def get_role(email): # this function assumes that each user only has one role
         
     return None # if code isn't working as intended
 
+# make link to signup page
+@app.route('/signup', methods=['POST', 'GET'])
+def signup():
+    return render_template('signup.html')
 
+@app.route('/categories', methods=['POST', 'GET']) #should be repeatedly called when clicking on subcategories
+def categories():
+    if request.method == 'GET': #Initial navigation to page.
+        #TODO in html file: Show root node "All" after navigating from the landing page
+        return render_template('categories.html')
+
+    else: #if POST, display subcategories/products. This would be after clicking "All"
+        category = request.form['category']
+
+        with sql.connect('database.db') as connection:
+            cursor = connection.cursor()
+            cursor.execute('SELECT category_name FROM Categories WHERE parent_category = ?'(category,))
+            cursor.execute('SELECT product_title FROM Products WHERE category = ?'(category,))
+
+            categories_products = cursor.fetchall #TODO check if this code actually works. I haven't tested it yet.
+    return render_template('categories.html', categories_prodcts = categories_products)
+
+@app.route('/view_products', methods = ['POST','GET'])
+def view_products():
+
+    with sql.connect('database.db') as connection:
+        cursor = connection.cursor()
+        cursor.execute('SELECT * FROM Products WHERE seller_email = ?',(email,))
+        contents = cursor.fetchall
+    
+    return render_template('view_product.html', contents = contents)
+
+@app.route('/add_listing', methods = ['POST','GET'])
+def add_listing(): #TODO: ADJUST addlisting.html to fit the schema
+    if request.method == 'POST':
+        user_email = email
+        id = request.form['listing_id'] #TODO: consider autoincrementing in sql instead of guessing an ID until unique
+        category = request.form['category_name']
+        product_title = request.form['product_title']
+        product_name = request.form['product_name']
+        product_description = request.form['product_description']
+        quantity = request.form['quantity']
+        price = request.form['price']
+        status = 1
+        
+        with sql.connect('database.db') as connection:
+            cursor = connection.cursor()
+            cursor.execute('INSERT INTO Products VALUES (?,?,?,?,?,?,?,?,?)',
+                           (user_email, id, category, product_title, product_name, product_description, quantity, price, status))
+            connection.commit()
+    else:
+        return render_template('addlisting.html')
+    
+@app.route('/remove_listing', methods = ['POST','GET'])
+def remove_listing():
+    if request.method == 'POST':
+        id = request.form['listing_id']
+        
+        with sql.connect('database.db') as connection:
+            cursor = connection.cursor()
+            cursor.execute('DELETE FROM Products WHERE listing_ID = ?'(id,))
+            connection.commit()
+    return render_template('removelisting.html')
 
 # Note: commenting database setup out because it takes 15-20 minutes to run and only needs to be done once
 
