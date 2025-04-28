@@ -5,12 +5,12 @@ from flask import Flask, render_template, request, session, redirect, url_for
 app = Flask(__name__)
 app.secret_key = 'your_secret_key_here'
 
-# Home Page - Login
+#Navigate to login
 @app.route('/')
 def index():
     return render_template('login.html')
 
-# LOGIN
+#Login
 @app.route('/login', methods=['POST', 'GET'])
 def login():
     if request.method == 'POST':
@@ -36,13 +36,12 @@ def login():
     else:
         return render_template('login.html')
 
-# SELLER HOME PAGE
+#Seller Home Page
 @app.route('/sellerhome')
 def seller_home():
     return render_template('SellerPage.html')
 
-# SIGNUP
-# SIGNUP
+#Signup
 @app.route('/signup', methods=['POST', 'GET'])
 def signup():
     if request.method == 'POST':
@@ -55,7 +54,7 @@ def signup():
         with sql.connect('database.db') as connection:
             cursor = connection.cursor()
 
-            # First, check if email already exists
+            #Check if email already exists
             cursor.execute('SELECT email FROM Users WHERE email = ?', (email,))
             existing_user = cursor.fetchone()
 
@@ -63,7 +62,7 @@ def signup():
                 print("[DEBUG] Email already exists:", email)
                 return render_template('signup.html', error='Email already registered. Please login.')
 
-            # If email not exists, insert new user
+            #If email not exists, insert new user
             cursor.execute('INSERT INTO Users (email, hash) VALUES (?, ?)', (email, hashed_pw))
             print("[DEBUG] Inserted new user into Users:", email)
 
@@ -109,7 +108,7 @@ def signup():
     else:
         return render_template('signup.html')
 
-# ADD PRODUCT
+#Add Product
 @app.route('/addproduct', methods=['POST', 'GET'])
 def add_listing():
     email = session.get('email')
@@ -143,7 +142,7 @@ def add_listing():
     else:
         return render_template('addproduct.html')
 
-# MANAGE PRODUCTS
+#Manage Products
 @app.route('/manageproducts', methods=['GET'])
 def manage_products():
     email = session.get('email')
@@ -157,7 +156,7 @@ def manage_products():
 
     return render_template('manageproducts.html', products=products)
 
-# EDIT PRODUCT
+#Edit Product
 @app.route('/editproduct/<int:listing_id>', methods=['GET', 'POST'])
 def edit_product(listing_id):
     email = session.get('email')
@@ -168,7 +167,7 @@ def edit_product(listing_id):
         cursor = connection.cursor()
 
         if request.method == 'POST':
-            # Get form data
+            #Form Data
             new_title = request.form['product_title']
             new_name = request.form['product_name']
             new_category = request.form['category_name']
@@ -176,7 +175,7 @@ def edit_product(listing_id):
             new_quantity = int(request.form['quantity'])
             new_price = request.form['product_price']
 
-            # Update database
+            #Update table
             cursor.execute('''
                 UPDATE Products
                 SET product_title = ?, product_name = ?, category = ?, product_desc = ?, quantity = ?, product_price = ?
@@ -186,7 +185,7 @@ def edit_product(listing_id):
             connection.commit()
             return redirect(url_for('manage_products'))
 
-        # GET request ➔ Show the product info to edit
+        # Show the product info to edit
         cursor.execute('SELECT product_title, product_name, category, product_desc, quantity, product_price FROM Products WHERE listing_ID = ? AND seller_email = ?', (listing_id, email))
         product = cursor.fetchone()
 
@@ -196,7 +195,6 @@ def edit_product(listing_id):
     return render_template('editproduct.html', product=product, listing_id=listing_id)
 
 # DELETE PRODUCT
-# DELETE PRODUCT (Permanent)
 @app.route('/deleteproduct/<int:listing_id>')
 def delete_product(listing_id):
     email = session.get('email')
@@ -224,7 +222,7 @@ def soldout_product(listing_id):
 
     return redirect(url_for('manage_products'))
 
-# MARK PRODUCT AS IN STOCK
+#Mark product as in stock
 @app.route('/markinstock/<int:listing_id>')
 def mark_in_stock(listing_id):
     email = session.get('email')
@@ -238,7 +236,7 @@ def mark_in_stock(listing_id):
 
     return redirect(url_for('manage_products'))
 
-#Seller - View sales
+#SELLER - View Sales
 @app.route('/viewsales')
 def view_sales():
     email = session.get('email')
@@ -262,7 +260,7 @@ def view_sales():
 
 
 
-# BUYER: Browse Top Categories
+#BUYER: Browse Top Categories
 @app.route('/browseproducts', methods=['GET'])
 def browse_products():
     with sql.connect('database.db') as connection:
@@ -272,7 +270,7 @@ def browse_products():
 
     return render_template('browseproducts.html', categories=categories, parent_category="Root")
 
-# BUYER: Browse Inside Category (Show subcategories + products)
+#BUYER: Browse Inside Category (Show subcategories and products)
 @app.route('/browseproducts/<category_name>', methods=['GET', 'POST'])
 def browse_subcategory(category_name):
     search_query = request.form.get('search', '').strip()
@@ -300,7 +298,7 @@ def browse_subcategory(category_name):
 
     return render_template('browseproducts.html', categories=subcategories, products=products, parent_category=category_name)
 
-# BUY PRODUCT Page
+#BUYER: Buy Product Page
 @app.route('/buyproduct/<int:listing_id>', methods=['GET', 'POST'])
 def buy_product(listing_id):
     with sql.connect('database.db') as connection:
@@ -335,7 +333,7 @@ def buy_product(listing_id):
 
     return render_template('buyproduct.html', product=product)
 
-# VIEW CART
+#View Cart
 @app.route('/cart', methods=['GET', 'POST'])
 def view_cart():
     if request.method == 'POST':
@@ -351,10 +349,10 @@ def view_cart():
                         session['cart'].pop(listing_id)
                 except ValueError:
                     pass
-        session.modified = True  # Force Flask to recognize session change
+        session.modified = True  #Force Flask to recognize session change
         return redirect(url_for('view_cart'))
 
-    # GET request part: Always load fresh cart data from session
+    #GET request part: Always load fresh cart data from session
     fresh_cart = session.get('cart', {})
     cart_items = []
     total_price = 0
@@ -382,10 +380,10 @@ def view_cart():
 def remove_from_cart(listing_id):
     if 'cart' in session and listing_id in session['cart']:
         session['cart'].pop(listing_id)
-        session.modified = True  # <== Add this to save changes!
+        session.modified = True  #Add this to save changes!
     return redirect(url_for('view_cart'))
 
-# CHECKOUT
+#Checkout
 @app.route('/checkout', methods=['GET', 'POST'])
 def checkout():
     cart = session.get('cart', {})
@@ -398,7 +396,7 @@ def checkout():
         for listing_id, item in cart.items():
             quantity_purchased = item['quantity']
 
-            # 1. Get current product info
+            #Get current product info
             cursor.execute('SELECT quantity, seller_email, product_price FROM Products WHERE listing_ID = ?', (listing_id,))
             product = cursor.fetchone()
 
@@ -410,11 +408,11 @@ def checkout():
             clean_price = str(product_price).replace('$', '').replace(',', '').strip()
             product_price = float(clean_price)
 
-            # 2. Check stock
+            #Check stock
             if quantity_purchased > current_quantity:
                 return f"Not enough stock for {item['product_name']}.", 400
 
-            # 3. Update stock
+            #Update stock
             new_quantity = current_quantity - quantity_purchased
             new_status = 2 if new_quantity == 0 else 1
 
@@ -424,7 +422,7 @@ def checkout():
                 WHERE listing_ID = ?
             ''', (new_quantity, new_status, listing_id))
 
-            # 4. Update seller balance
+            #Update seller balance
             subtotal = product_price * quantity_purchased
             cursor.execute('''
                 UPDATE Seller
@@ -432,7 +430,7 @@ def checkout():
                 WHERE seller_email = ?
             ''', (subtotal, seller_email))
 
-            # 5. Insert into Orders table
+            #Insert into Orders table
             cursor.execute('''
                 INSERT INTO Orders (seller_email, listing_ID, buyer_email, date, quantity, payment)
                 VALUES (?, ?, ?, CURRENT_TIMESTAMP, ?, ?)
@@ -440,12 +438,12 @@ def checkout():
 
         connection.commit()
 
-    # 6. Clear cart after successful checkout
+    #Clear cart after successful checkout
     session['cart'] = {}
 
     return render_template('checkoutsuccess.html')
 
-#Buyers-My orders
+#BUYERS: My orders
 @app.route('/myorders')
 def my_orders():
     email = session.get('email')
@@ -466,7 +464,7 @@ def my_orders():
 
     return render_template('myorders.html', orders=orders)
 
-#Buyers-Review
+#BUYERS: Review
 @app.route('/submit_review/<int:order_id>', methods=['POST'])
 def submit_review(order_id):
     rate = request.form.get('rate')
@@ -478,7 +476,7 @@ def submit_review(order_id):
     with sql.connect('database.db') as connection:
         cursor = connection.cursor()
 
-        # Insert review
+        #Insert review
         cursor.execute('''
             INSERT INTO Reviews (order_ID, rate, review_desc)
             VALUES (?, ?, ?)
@@ -488,7 +486,7 @@ def submit_review(order_id):
 
     return redirect(url_for('my_orders'))
 
-# CHECK EMAIL
+#check email
 def check_email(email):
     with sql.connect('database.db') as connection:
         cursor = connection.cursor()
@@ -496,7 +494,7 @@ def check_email(email):
         result = cursor.fetchone()
     return result[0] > 0 if result else False
 
-# CHECK PASSWORD
+#check password
 def check_password(email, password):
     with sql.connect('database.db') as connection:
         cursor = connection.cursor()
@@ -509,13 +507,13 @@ def check_password(email, password):
         return bcrypt.checkpw(password.encode('utf-8'), stored_hash)
     return False
 
-# HASH PASSWORD
+#hash password
 def hash_password(password):
     salt = bcrypt.gensalt()
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
     return hashed_password
 
-# ACCOUNT SETTINGS
+#Account Settings
 @app.route('/accountsettings', methods=['GET', 'POST'])
 def account_settings():
     email = session.get('email')
@@ -525,7 +523,7 @@ def account_settings():
     with sql.connect('database.db') as connection:
         cursor = connection.cursor()
 
-        # Determine role: Buyer or Seller
+        #Determine role: Buyer or Seller
         role = get_role(email)
 
         if request.method == 'POST':
@@ -540,7 +538,7 @@ def account_settings():
                 expire_year = request.form['expire_year']
                 security_code = request.form['security_code']
 
-                # Update Buyer information
+                #Update buyer info
                 cursor.execute('UPDATE Buyer SET buyer_bname = ? WHERE buyer_email = ?', (buyer_bname, email))
                 cursor.execute('UPDATE Address SET street_num = ?, street_name = ?, zipcode = ? WHERE addr_ID = (SELECT buyer_addr_ID FROM Buyer WHERE buyer_email = ?)', (street_num, street_name, zipcode, email))
                 cursor.execute('UPDATE Credit_Cards SET credit_card_num = ?, card_type = ?, expire_month = ?, expire_year = ?, security_code = ? WHERE owner_email = ?', (credit_card_num, card_type, expire_month, expire_year, security_code, email))
@@ -553,14 +551,13 @@ def account_settings():
                 bank_rno = request.form['bank_rno']
                 bank_accno = request.form['bank_accno']
 
-                # Update Seller information
+                #Update seller information
                 cursor.execute('UPDATE Seller SET seller_bname = ?, bank_rno = ?, bank_accno = ? WHERE seller_email = ?', (seller_bname, bank_rno, bank_accno, email))
                 cursor.execute('UPDATE Address SET street_num = ?, street_name = ?, zipcode = ? WHERE addr_ID = (SELECT seller_addr_ID FROM Seller WHERE seller_email = ?)', (street_num, street_name, zipcode, email))
 
             connection.commit()
             return redirect(url_for('account_settings'))
 
-        # GET - Fetch user details
         user_data = {}
 
         if role == 'Buyer':
@@ -584,7 +581,7 @@ def account_settings():
 
     return render_template('accountsettings.html', user_data=user_data, role=role, email=email)
 
-# GET USER ROLE
+#Get Role
 def get_role(email):
     with sql.connect('database.db') as connection:
         cursor = connection.cursor()
@@ -598,7 +595,7 @@ def get_role(email):
             return 'Seller'
     return None
 
-# LOGOUT
+#Logout
 @app.route('/logout')
 def logout():
     session.clear()
