@@ -244,10 +244,17 @@ def place_order():
         cursor.execute('SELECT * FROM Products WHERE listing_ID = ?'(id,))
         info = cursor.fetchall
 
-    return render_template('secure_checkout.html', info = info, total = total, quantity = requested_quantity)
+    return render_template('review_order.html', info = info, total = total, quantity = requested_quantity)
 
 @app.route('/secure_checkout', methods = ['POST', 'GET']) #TODO: COMPLETE FUNCTION
 def secure_checkout():
+    email = request.form['email']
+    
+
+    return render_template('secure_checkout.html',)
+
+@app.route('/order_confirmation', methods = ['POST', 'GET'])
+def order_confirmation():
     id = request.form['listing_id']
     quantity = request.form['quantity']
     requested_quantity = request.form['requested_quantity']
@@ -267,8 +274,10 @@ def secure_checkout():
         info = cursor.fetchall
         connection.commit()
 
-    pass
-    #TASK 5:Product/Seller Review
+    return render_template('order_confirmation.html')
+
+
+#TASK 5:Product/Seller Review
 @app.route('/review', methods=['POST', 'GET'])
 def review():
     if request.method == 'POST':
