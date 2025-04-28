@@ -128,7 +128,7 @@ def categories():
             cursor.execute('SELECT product_title FROM Products WHERE category = ?'(category,))
 
             categories_products = cursor.fetchall #TODO check if this code actually works. I haven't tested it yet.
-    return render_template('categories.html', categories_prodcts = categories_products)
+    return render_template('categories.html', categories_prodcts = categories_products) #all products and categories are stored in a tuple/set
 
 #TASK 3: PRODUCT LISTING MANAGEMENT
 @app.route('/manage_products', methods = ['POST','GET'])
@@ -188,7 +188,13 @@ def product_info():
 @app.route('/review_order', methods = ['POST', 'GET'])
 def place_order():
     id = request.form['listing_id']
-    requested_quantity = request.form['quantity']
+    quantity = request.form['quantity']
+    requested_quantity = request.form['requested_quantity']
+
+    if quantity - requested_quantity < 0: #check if quantity exceeds stock
+        message = "Not enough items in stock"
+        return render_template('product_info.html', message = message)
+
     price = request.form['product_price']
     total = requested_quantity * int(price) #because price is stored as varchar
 
@@ -202,21 +208,35 @@ def place_order():
 @app.route('/secure_checkout', methods = ['POST', 'GET']) #TODO: COMPLETE FUNCTION
 def secure_checkout():
     id = request.form['listing_id']
-    requested_quantity = request.form['quantity']
+    quantity = request.form['quantity']
+    requested_quantity = request.form['requested_quantity']
     price = request.form['product_price']
     total = requested_quantity * int(price) #because price is stored as varchar
 
     with sql.connect('database.db') as connection: #TODO: consider implementing a way to prevent user from buying more than available quantity
         cursor = connection.cursor()
-        cursor.execute('UPDATE Products SET quantity = quantity - 1 WHERE listing_ID = ?',(id,))
-        cursor.execute('UPDATE Products SET status = 2 WHERE listing_id = ? AND quantity = quantity - ?',(id, requested_quantity))
+
+        if quantity - requested_quantity == 0: #if sold out, change status to 2
+            cursor.execute('UPDATE Products SET quantity = quantity - ?, status =  2 WHERE listing_ID = ?',(requested_quantity, id,))
+
+        else:
+            cursor.execute('UPDATE Products SET quantity = quantity - ? WHERE listing_ID = ?',(requested_quantity, id,))
+        cursor.execute('UPDATE Products SET status = 2 WHERE listing_id = ? AND quantity = quantity - ?',(id, requested_quantity,))
         cursor.execute('SELECT * FROM Products WHERE listing_ID = ?'(id,))
         info = cursor.fetchall
-        connection.commit()    
-
-
+        connection.commit()
 
     pass
+
+    #TASK 5: 
+
+    #TASK 6:
+
+    #TASK 7:
+
+    #TASK 8:
+    
+
 
 # Note: commenting database setup out because it takes 15-20 minutes to run and only needs to be done once
 
