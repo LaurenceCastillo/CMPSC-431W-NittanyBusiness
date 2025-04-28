@@ -25,6 +25,8 @@ def login():
                     return redirect(url_for('browse_products'))
                 elif role == 'Seller':
                     return render_template('SellerPage.html')
+                elif role == 'HelpDesk':
+                    return redirect(url_for('helpdesk_dashboard'))
                 else:
                     return render_template('login.html', error='Role not found.')
             else:
@@ -581,7 +583,169 @@ def account_settings():
 
     return render_template('accountsettings.html', user_data=user_data, role=role, email=email)
 
-#Get Role
+
+# HELP DESK - ACCOUNT SETTINGS
+@app.route('/helpdesk/account', methods=['GET', 'POST'])
+def helpdesk_account_settings():
+    email = session.get('email')
+    if not email:
+        return redirect(url_for('login'))
+
+    with sql.connect('database.db') as connection:
+        cursor = connection.cursor()
+
+        if request.method == 'POST':
+            position = request.form.get('position')
+            cursor.execute('UPDATE HelpDesk SET position = ? WHERE email = ?', (position, email))
+            connection.commit()
+            return redirect(url_for('helpdesk_account_settings'))
+
+        # GET: Load profile
+        cursor.execute('SELECT email, position FROM HelpDesk WHERE email = ?', (email,))
+        profile = cursor.fetchone()
+
+    return render_template('helpdesk_account.html', profile=profile)
+
+
+# Helpdesk
+
+# HELP DESK DASHBOARD
+@app.route('/helpdesk')
+def helpdesk_dashboard():
+    email = session.get('email')
+    if not email:
+        return redirect(url_for('login'))
+
+    # Check if this user is a HelpDesk Staff
+    with sql.connect('database.db') as connection:
+        cursor = connection.cursor()
+        cursor.execute('SELECT email FROM HelpDesk WHERE email = ?', (email,))
+        result = cursor.fetchone()
+
+    if result:
+        return render_template('HelpDeskPage.html')
+    else:
+        return "Unauthorized Access", 403
+
+# HELP DESK - MANAGE USERS
+@app.route('/helpdesk/manageusers')
+def helpdesk_manage_users():
+    email = session.get('email')
+    if not email:
+        return redirect(url_for('login'))
+
+    # Confirm HelpDesk staff
+    with sql.connect('database.db') as connection:
+        cursor = connection.cursor()
+        cursor.execute('SELECT email FROM HelpDesk WHERE email = ?', (email,))
+        result = cursor.fetchone()
+
+        if not result:
+            return "Unauthorized Access", 403
+
+        # Fetch all buyers and sellers
+        cursor.execute('''
+            SELECT email, "Buyer" as role FROM Users
+            WHERE email IN (SELECT buyer_email FROM Buyer)
+            UNION ALL
+            SELECT email, "Seller" as role FROM Users
+            WHERE email IN (SELECT seller_email FROM Seller)
+        ''')
+        users = cursor.fetchall()
+
+    return render_template('manageusers.html', users=users)
+
+# REQUEST HELP (for Buyers and Sellers)
+@app.route('/requesthelp', methods=['GET', 'POST'])
+def request_help():
+    email = session.get('email')
+    if not email:
+        return redirect(url_for('login'))
+
+    if request.method == 'POST':
+        request_type = request.form.get('request_type')
+        request_desc = request.form.get('request_desc')
+
+        with sql.connect('database.db') as connection:
+            cursor = connection.cursor()
+
+            cursor.execute('''
+                INSERT INTO Requests (sender_email, request_type, request_desc, request_status)
+                VALUES (?, ?, ?, ?)
+            ''', (email, request_type, request_desc, 'Pending'))
+
+            connection.commit()
+
+        return redirect(url_for('browse_products'))
+
+    return render_template('requesthelp.html')
+
+
+#HELP DESK - VIEW REQUESTS
+@app.route('/helpdesk/requests', methods=['GET', 'POST'])
+def helpdesk_view_requests():
+    email = session.get('email')
+    if not email:
+        return redirect(url_for('login'))
+
+    with sql.connect('database.db') as connection:
+        cursor = connection.cursor()
+        cursor.execute('SELECT email FROM HelpDesk WHERE email = ?', (email,))
+        result = cursor.fetchone()
+
+        if not result:
+            return "Unauthorized Access", 403
+
+        if request.method == 'POST':
+            request_id = request.form.get('request_id')
+            new_status = request.form.get('new_status')
+
+            cursor.execute('UPDATE Requests SET request_status = ? WHERE request_ID = ?', (new_status, request_id))
+            connection.commit()
+
+            return redirect(url_for('helpdesk_view_requests'))
+
+        cursor.execute('''
+            SELECT request_ID, sender_email, request_desc, request_status
+            FROM Requests
+            ORDER BY request_ID DESC
+        ''')
+        requests = cursor.fetchall()
+
+    return render_template('viewrequests.html', requests=requests)
+
+# HELP DESK - EDIT USER (email & password)
+@app.route('/helpdesk/edituser/<string:user_email>', methods=['GET', 'POST'])
+def helpdesk_edit_user(user_email):
+    email = session.get('email')
+    if not email:
+        return redirect(url_for('login'))
+
+    with sql.connect('database.db') as connection:
+        cursor = connection.cursor()
+        cursor.execute('SELECT email FROM HelpDesk WHERE email = ?', (email,))
+        result = cursor.fetchone()
+
+        if not result:
+            return "Unauthorized Access", 403
+
+        if request.method == 'POST':
+            new_email = request.form['new_email']
+            new_password = request.form['new_password']
+            hashed_pw = hash_password(new_password)
+
+            cursor.execute('UPDATE Users SET email = ?, hash = ? WHERE email = ?', (new_email, hashed_pw, user_email))
+            cursor.execute('UPDATE Buyer SET buyer_email = ? WHERE buyer_email = ?', (new_email, user_email))
+            cursor.execute('UPDATE Seller SET seller_email = ? WHERE seller_email = ?', (new_email, user_email))
+            cursor.execute('UPDATE HelpDesk SET email = ? WHERE email = ?', (new_email, user_email))
+
+            connection.commit()
+            return redirect(url_for('helpdesk_manage_users'))
+
+        return render_template('edituser.html', user_email=user_email)
+
+
+# GET USER ROLE
 def get_role(email):
     with sql.connect('database.db') as connection:
         cursor = connection.cursor()
@@ -593,7 +757,12 @@ def get_role(email):
         result = cursor.fetchone()
         if result:
             return 'Seller'
+        cursor.execute('SELECT email FROM HelpDesk WHERE email = ?', (email,))
+        result = cursor.fetchone()
+        if result:
+            return 'HelpDesk'        
     return None
+
 
 #Logout
 @app.route('/logout')
