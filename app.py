@@ -80,32 +80,49 @@ def hash_password(password):
 def get_role(email): #this function assumes that each user only has one role
     #NOTE untested
 
+    #with sql.connect('database.db') as connection:
+    #    cursor = connection.cursor()
+
+    #    cursor.execute('SELECT buyer_email FROM Buyer WHERE buyer_email = ?',(email,))
+    #    result = cursor.fetchone()
+    #    stored_buyer = result[0]
+    #    if stored_buyer > 0:
+    #        return 'Buyer'
+
+    #    cursor.execute('SELECT seller_email FROM Seller WHERE seller_email = ?',(email,))
+    #    result = cursor.fetchone()
+    #    stored_seller = result[0]
+    #    if stored_seller > 0:
+    #        return 'Seller'
+
+    #    cursor.execute('SELECT email FROM HelpDesk WHERE email = ?',(email,))
+    #    result = cursor.fetchone()
+    #    stored_helpdesk = result[0]
+    #    if stored_helpdesk > 0:
+    #        return 'Help Desk'
+        
+
+    #return None # if code isn't working as intended
     with sql.connect('database.db') as connection:
         cursor = connection.cursor()
 
-        #cursor.execute('SELECT email FROM Users WHERE email = ?',(email,))
-        #result = cursor.fetchone()
-        #stored_email = result[0]
-
-        cursor.execute('SELECT buyer_email FROM Buyer WHERE buyer_email = ?',(email,))
+        cursor.execute('SELECT buyer_email FROM Buyer WHERE buyer_email = ?', (email,))
         result = cursor.fetchone()
-        stored_buyer = result[0]
-        if stored_buyer > 0:
+        if result:
             return 'Buyer'
 
-        cursor.execute('SELECT seller_email FROM Seller WHERE seller_email = ?',(email,))
+        cursor.execute('SELECT seller_email FROM Seller WHERE seller_email = ?', (email,))
         result = cursor.fetchone()
-        stored_seller = result[0]
-        if stored_seller > 0:
+        if result:
             return 'Seller'
 
-        cursor.execute('SELECT email FROM HelpDesk WHERE email = ?',(email,))
+        cursor.execute('SELECT email FROM HelpDesk WHERE email = ?', (email,))
         result = cursor.fetchone()
-        stored_helpdesk = result[0]
-        if stored_helpdesk > 0:
+        if result:
             return 'Help Desk'
-        
-    return None # if code isn't working as intended
+
+    return None
+
 
 # make link to signup page
 @app.route('/signup', methods=['POST', 'GET'])
@@ -128,7 +145,7 @@ def categories():
             cursor.execute('SELECT product_title FROM Products WHERE category = ?'(category,))
 
             categories_products = cursor.fetchall #TODO check if this code actually works. I haven't tested it yet.
-    return render_template('categories.html', categories_prodcts = categories_products) #all products and categories are stored in a tuple/set
+    return render_template('categories.html', categories_prodcts = categories_products) #all products and categories are stored in a tuple
 
 #TASK 3: PRODUCT LISTING MANAGEMENT
 @app.route('/manage_products', methods = ['POST','GET'])
