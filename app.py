@@ -97,6 +97,12 @@ def signup():
         return redirect(url_for('index'))
     else:
         return render_template('signup.html')
+    
+# LOGOUT
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('index'))
 
 # CHECK EMAIL
 def check_email(email):
@@ -142,11 +148,158 @@ def get_role(email):
 
     return None
 
-# LOGOUT
-@app.route('/logout')
-def logout():
-    session.clear()
-    return redirect(url_for('index'))
+
+
+#TASK 2: CATEGORY HEIRARCHY
+@app.route('/browse_products', methods=['POST', 'GET']) #should be repeatedly called when clicking on subcategories
+def browse_products():
+    if request.method == 'GET': #Initial navigation to page.
+        #TODO in html file: Show root node "All" after navigating from the landing page
+        return render_template('categories.html')
+
+    else: #if POST, display subcategories/products. This would be after clicking "All"
+        category = request.form['category']
+
+        with sql.connect('database.db') as connection:
+            cursor = connection.cursor()
+            cursor.execute('SELECT category_name FROM Categories WHERE parent_category = ?',(category,))
+            subcategories = cursor.fetchall()
+
+            cursor.execute('SELECT product_title FROM Products WHERE category = ?',(category,))
+            products = cursor.fetchall()
+
+            categories_products = {'subcategories': subcategories, 'products': products} #TODO check if this code actually works. I haven't tested it yet.
+    return render_template('categories.html', categories_products = categories_products) #all products and categories are stored in a tuple
+
+#TASK 3: PRODUCT LISTING MANAGEMENT
+@app.route('/manage_products', methods = ['POST','GET'])
+def view_products():
+
+    with sql.connect('database.db') as connection:
+        cursor = connection.cursor()
+        cursor.execute('SELECT * FROM Products WHERE seller_email = ?',(email,))
+        contents = cursor.fetchall
+    
+    return render_template('view_product.html', contents = contents)
+
+@app.route('/add_listing', methods = ['POST','GET'])
+def add_listing(): #TODO: ADJUST addlisting.html to fit the schema
+    if request.method == 'POST':
+        user_email = email
+        id = request.form['listing_id'] #TODO: consider autoincrementing in sql instead of guessing an ID until unique
+        category = request.form['category_name']
+        product_title = request.form['product_title']
+        product_name = request.form['product_name']
+        product_description = request.form['product_description']
+        quantity = request.form['quantity']
+        price = request.form['price']
+        status = 1 #status 1 indicates active
+        
+        with sql.connect('database.db') as connection:
+            cursor = connection.cursor()
+            cursor.execute('INSERT INTO Products VALUES (?,?,?,?,?,?,?,?,?)',
+                           (user_email, id, category, product_title, product_name, product_description, quantity, price, status))
+            connection.commit()
+    else:
+        return render_template('addlisting.html')
+    
+@app.route('/remove_listing', methods = ['POST','GET'])
+def remove_listing():
+    if request.method == 'POST':
+        id = request.form['listing_id']
+        
+        with sql.connect('database.db') as connection:
+            cursor = connection.cursor()
+            cursor.execute('UPDATE Products SET status = 0 WHERE listing_ID = ?',(id,)) #status 0 indicates inactive
+            connection.commit()
+    return render_template('removelisting.html')
+
+
+#TASK 4: ORDER MANAGEMENT
+@app.route('/product_info', methods = ['POST', 'GET'])
+def product_info():
+    id = request.form['listing_id']
+    with sql.connect('database.db') as connection:
+        cursor = connection.cursor()
+        cursor.execute('SELECT * FROM Products WHERE listing_ID = ?'(id,))
+        info = cursor.fetchall
+    return render_template('product_info.html', info = info)
+
+
+@app.route('/review_order', methods = ['POST', 'GET'])
+def place_order():
+    id = request.form['listing_id']
+    quantity = request.form['quantity']
+    requested_quantity = request.form['requested_quantity']
+
+    if quantity - requested_quantity < 0: #check if quantity exceeds stock
+        message = "Not enough items in stock"
+        return render_template('product_info.html', message = message)
+
+    price = request.form['product_price']
+    total = requested_quantity * int(price) #because price is stored as varchar
+
+    with sql.connect('database.db') as connection: #TODO: consider implementing a way to prevent user from buying more than available quantity
+        cursor = connection.cursor()
+        cursor.execute('SELECT * FROM Products WHERE listing_ID = ?'(id,))
+        info = cursor.fetchall
+
+    return render_template('secure_checkout.html', info = info, total = total, quantity = requested_quantity)
+
+@app.route('/secure_checkout', methods = ['POST', 'GET']) #TODO: COMPLETE FUNCTION
+def secure_checkout():
+    id = request.form['listing_id']
+    quantity = request.form['quantity']
+    requested_quantity = request.form['requested_quantity']
+    price = request.form['product_price']
+    total = requested_quantity * int(price) #because price is stored as varchar
+
+    with sql.connect('database.db') as connection: #TODO: consider implementing a way to prevent user from buying more than available quantity
+        cursor = connection.cursor()
+
+        if quantity - requested_quantity == 0: #if sold out, change status to 2
+            cursor.execute('UPDATE Products SET quantity = quantity - ?, status =  2 WHERE listing_ID = ?',(requested_quantity, id,))
+
+        else:
+            cursor.execute('UPDATE Products SET quantity = quantity - ? WHERE listing_ID = ?',(requested_quantity, id,))
+        cursor.execute('UPDATE Products SET status = 2 WHERE listing_id = ? AND quantity = quantity - ?',(id, requested_quantity,))
+        cursor.execute('SELECT * FROM Products WHERE listing_ID = ?'(id,))
+        info = cursor.fetchall
+        connection.commit()
+
+    pass
+
+    #TASK 5: 
+
+    #TASK 6:
+
+    #TASK 7:
+
+    #TASK 8:
+    
+
+
+# Note: commenting database setup out because it takes 15-20 minutes to run and only needs to be done once
+
+# connect = sql.connect('database.db')
+# cursor = connect.cursor()
+# with open('NittanyBusinessDataset_v3/Users.csv', mode = 'r', encoding = 'utf-8-sig') as file:
+#    csv = csv.DictReader(file)
+#    cursor.execute('CREATE TABLE IF NOT EXISTS Users(email CHAR(30) PRIMARY KEY, password CHAR(100));')
+
+#    connect.execute('BEGIN TRANSACTION;')
+#    for row in csv:
+#        email = row['email']
+#        password = row['password']
+
+#        hashed_password = hash_password(password)
+
+#        try:
+#            cursor.execute('INSERT INTO Users (email,password) VALUES (?, ?);', (email,hashed_password))
+#        except sql.IntegrityError: #if email already exists
+#            continue
+#    connect.commit()
+
 
 if __name__ == "__main__":
     app.run(debug=True)
