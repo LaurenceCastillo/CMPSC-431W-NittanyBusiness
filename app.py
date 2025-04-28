@@ -11,8 +11,6 @@ def index():
     return render_template('login.html')
 
 #TASK 1:
-#TODO: route to help desk homepage if user has help desk role
-#TODO: Create Help desk home page
 #Login
 @app.route('/login', methods=['POST', 'GET'])
 def login():
@@ -28,6 +26,9 @@ def login():
                     return redirect(url_for('browse_products'))
                 elif role == 'Seller':
                     return redirect(url_for('seller_home'))
+                elif role == 'Help Desk':
+                    return redirect(url_for('helpdesk'))
+                
                 else:
                     return render_template('login.html', error='Role not found.')
             else:
@@ -38,6 +39,11 @@ def login():
             return render_template('login.html', error=error)
     else:
         return render_template('login.html')
+
+#TODO: Make helpdesk page functional
+@app.route('/helpdesk')
+def helpdesk():
+    return render_template('helpdesk.html')
 
 #Seller Home Page
 @app.route('/sellerhome')
@@ -192,7 +198,7 @@ def browse_subcategory(category_name):
     return render_template('browseproducts.html', categories=subcategories, products=products, parent_category=category_name)
 
 #TASK 4: Order Management
-#TODO: Make checkout & maybe order confirmation page
+#TODO: Make checkout & maybe order confirmation page. Ensure that proper amount is added to the corresponding seller
 #Buy Product Page
 @app.route('/buyproduct/<int:listing_id>', methods=['GET', 'POST'])
 def buy_product(listing_id):
@@ -318,6 +324,11 @@ def get_role(email):
         result = cursor.fetchone()
         if result:
             return 'Seller'
+        
+        cursor.execute('SELECT email FROM HelpDesk WHERE email = ?', (email,))
+        result = cursor.fetchone()
+        if result:
+            return 'Help Desk'
     return None
 
 #Logout
