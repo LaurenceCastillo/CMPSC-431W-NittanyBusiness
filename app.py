@@ -41,9 +41,27 @@ def login():
         return render_template('login.html')
 
 #TODO: Make helpdesk page functional
-@app.route('/helpdesk')
+#Helpdesk should display pending requests, user management or system administration tasks
+@app.route('/helpdesk', methods = ['POST', 'GET'])
 def helpdesk():
-    return render_template('helpdesk.html')
+    if request.method == 'GET':
+
+        with sql.connect('database.db') as connection:
+            cursor = connection.cursor()
+            cursor.execute('SELECT * FROM Requests WHERE request_status = 0')
+            active_requests = cursor.fetchall()
+            return render_template('helpdesk.html', active_requests = active_requests)
+    
+    else: #If method is POST
+        new_email = request.form('new_email')
+        old_email = session.get('email')
+
+        with sql.connect('database.db') as connection:
+            cursor = connection.cursor()
+            cursor.execute('UPDATE Users SET email = ? WHERE email = ?', (new_email,old_email))
+            connection.commit()
+
+        return redirect(url_for('helpdesk'))
 
 #Seller Home Page
 @app.route('/sellerhome')
