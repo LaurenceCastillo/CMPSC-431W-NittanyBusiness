@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Browse {{ parent_category }}</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+
+    <style>
+        .container { margin-top: 40px; }
+        .btn-category { margin: 5px; }
+        .navbar {
+            background-color: #003366;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin: 0 10px;
+            font-weight: bold;
+        }
+        .navbar a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<div class="navbar">
+    <div>
+        <a href="/browseproducts">Home</a>
+        <a href="/helpdesk">Help Desk</a>
+        <a href="/cart">Shopping Cart</a>
+        <a href="/accountsettings">⚙️ Settings</a>
+    </div>
+    <div>
+        <a href="/logout">Logout</a>
+    </div>
+</div>
+
+<div class="container">
+    <h2 class="text-center mb-4">Browse: {{ parent_category }}</h2>
+
+    <!-- Search Bar -->
+    <form method="POST" class="form-inline justify-content-center mb-4">
+        <input type="text" name="search" class="form-control mr-2" placeholder="Search Products..." required>
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+
+    <!-- Subcategories Section -->
+    {% if categories %}
+        <h4>Subcategories:</h4>
+        <div class="text-center mb-4">
+            {% for category in categories %}
+                <a href="/browseproducts/{{ category[0] }}" class="btn btn-info btn-category">
+                    {{ category[0].strip() }}
+                </a>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Products Section -->
+    {% if products %}
+        <h4>Products:</h4>
+        <table class="table table-bordered table-striped">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Product Title</th>
+                    <th>Product Name</th>
+                    <th>Description</th>
+                    <th>Price ($)</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for product in products %}
+                <tr>
+                    <td>{{ product[1] }}</td>
+                    <td>{{ product[2] }}</td>
+                    <td>{{ product[3] }}</td>
+                    <td>{{ product[4] }}</td>
+                    <td>
+                        <a href="/buyproduct/{{ product[0] }}" class="btn btn-success btn-sm">Buy</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+    {% if not categories and not products %}
+        <p class="text-center">No subcategories or products found under this category.</p>
+    {% endif %}
+
+    <div class="text-center mt-4">
+        <a href="/browseproducts" class="btn btn-secondary">Back to Categories</a>
+    </div>
+    <div class="text-right mb-3">
+    	<a href="{{ url_for('view_cart') }}" class="btn btn-primary">🛒 View Cart</a>
+    	<a href="{{ url_for('my_orders') }}" class="btn btn-info">📦 My Orders</a>
+    </div>
+</div>
+</body>
+</html>

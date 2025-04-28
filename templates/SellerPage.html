@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Seller Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='sellerpage.css') }}">
+    <style>
+        body {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .navbar {
+            background-color: #003366;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin: 0 1rem;
+            font-weight: bold;
+        }
+        .navbar a:hover {
+            text-decoration: underline;
+        }
+        .container {
+            text-align: center;
+            margin-top: 5rem;
+        }
+        .btn {
+            background-color: #003366;
+            color: white;
+            padding: 1rem 2rem;
+            margin: 1rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 1.2rem;
+            display: inline-block;
+            transition: 0.3s;
+        }
+        .btn:hover {
+            background-color: #0055a5;
+        }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <div>
+        <a href="/dashboard">Home</a>
+    </div>
+    <div>
+        <a href="/helpdesk">Help Desk</a>
+        <a href="/logout">Logout</a>
+	<a href="/accountsettings" class="btn btn-outline-primary btn-sm">⚙️ Settings</a>
+    </div>
+</div>
+
+<div class="container">
+    <h1>Welcome Seller!</h1>
+    <a href="/addproduct" class="btn">Add New Product</a>
+    <a href="/manageproducts" class="btn">Manage Products</a>
+    <a href="/viewsales" class="btn">View Sales</a>
+</div>
+
+</body>
+</html>

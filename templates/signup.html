@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Signup | NittanyBusiness</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+
+    <style>
+        .signup-form {
+            padding: 50px;
+            max-width: 600px;
+            margin: auto;
+        }
+        .form-section {
+            margin-bottom: 20px;
+        }
+        input, select {
+            width: 100%;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            padding: 8px;
+        }
+    </style>
+
+    <script>
+        function toggleFields() {
+            var role = document.getElementById('role').value;
+            document.getElementById('buyer-fields').style.display = (role === 'Buyer') ? 'block' : 'none';
+            document.getElementById('seller-fields').style.display = (role === 'Seller') ? 'block' : 'none';
+        }
+    </script>
+</head>
+
+<body>
+<h1 class="text-center">Create an Account</h1>
+
+<div class="signup-form">
+    <form action="/signup" method="POST">
+
+        <div class="form-section">
+            <label>Email:</label>
+            <input type="email" name="email" required>
+
+            <label>Password:</label>
+            <input type="password" name="pass" required>
+
+            <label>Role:</label>
+            <select id="role" name="role" onchange="toggleFields()" required>
+                <option value="">Select Role</option>
+                <option value="Buyer">Buyer</option>
+                <option value="Seller">Seller</option>
+            </select>
+        </div>
+
+        <!-- Buyer Fields -->
+        <div id="buyer-fields" style="display:none;">
+            <h5>Buyer Information</h5>
+            <label>Business Name:</label>
+            <input type="text" name="buyer_bname">
+
+            <h5>Address Information</h5>
+            <label>ZIP Code:</label>
+            <input type="text" name="zipcode">
+            <label>Street Number:</label>
+            <input type="text" name="street_num">
+            <label>Street Name:</label>
+            <input type="text" name="street_name">
+
+            <h5>Credit Card Information</h5>
+            <label>Credit Card Number:</label>
+            <input type="text" name="credit_card_num">
+            <label>Card Type:</label>
+            <input type="text" name="card_type">
+            <label>Expiry Month:</label>
+            <input type="number" name="expire_month" min="1" max="12">
+            <label>Expiry Year:</label>
+            <input type="number" name="expire_year" min="2024">
+            <label>Security Code:</label>
+            <input type="text" name="security_code">
+        </div>
+
+        <!-- Seller Fields -->
+        <div id="seller-fields" style="display:none;">
+            <h5>Seller Information</h5>
+            <label>Business Name:</label>
+            <input type="text" name="seller_bname">
+
+            <h5>Address Information</h5>
+            <label>ZIP Code:</label>
+            <input type="text" name="zipcode">
+            <label>Street Number:</label>
+            <input type="text" name="street_num">
+            <label>Street Name:</label>
+            <input type="text" name="street_name">
+
+            <h5>Bank Information</h5>
+            <label>Bank Routing Number:</label>
+            <input type="text" name="bank_rno">
+            <label>Bank Account Number:</label>
+            <input type="text" name="bank_accno">
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block">Register</button>
+
+        <p class="text-center mt-3">Already have an account? <a href="/">Login here</a></p>
+    </form>
+</div>
+
+</body>
+</html>

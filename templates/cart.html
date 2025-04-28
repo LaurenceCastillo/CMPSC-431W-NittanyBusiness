@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-store" />
+    <title>Shopping Cart</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+</head>
+
+<body>
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Shopping Cart 🛒</h2>
+
+    {% if cart_items %}
+    <form method="POST">
+        <table class="table table-bordered table-striped">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Product Title</th>
+                    <th>Product Name</th>
+                    <th>Quantity</th>
+                    <th>Unit Price ($)</th>
+                    <th>Subtotal ($)</th>
+                    <th>Remove</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for item in cart_items %}
+                <tr>
+                    <td>{{ item.product_title }}</td>
+                    <td>{{ item.product_name }}</td>
+                    <td>
+                        <input type="number" name="quantity_{{ item.listing_id }}" value="{{ item.quantity }}" min="0" class="form-control" style="width: 80px;">
+                    </td>
+                    <td>{{ item.product_price }}</td>
+                    <td>{{ item.subtotal }}</td>
+                    <td>
+                        <a href="/removefromcart/{{ item.listing_id }}" class="btn btn-danger btn-sm">Remove</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="text-center mt-4">
+            <h4>Total: ${{ total_price }}</h4>
+        </div>
+
+        <div class="text-center mt-4">
+            <button type="submit" class="btn btn-primary">Update Cart</button>
+            <a href="/browseproducts" class="btn btn-secondary">Continue Shopping</a>
+            <a href="/checkout" class="btn btn-success">Proceed to Checkout</a>
+            <a href="/logout" class="btn btn-danger">Logout</a>
+        </div>
+    </form>
+    {% else %}
+        <p class="text-center">Your cart is empty.</p>
+
+        <div class="text-center mt-4">
+            <a href="/browseproducts" class="btn btn-primary">Start Shopping</a>
+        </div>
+    {% endif %}
+</div>
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>View Sales</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='viewsales.css') }}">
+    <style>
+        body {
+            background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%);
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .navbar {
+            background-color: #003366;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin: 0 1rem;
+            font-weight: bold;
+        }
+        .navbar a:hover {
+            text-decoration: underline;
+        }
+        .container {
+            padding: 2rem;
+        }
+        table {
+            width: 90%;
+            margin: 2rem auto;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 1rem;
+            text-align: center;
+            border-bottom: 1px solid #ccc;
+        }
+        th {
+            background-color: #003366;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <div>
+        <a href="/sellerpage">Back</a>
+        <a href="/dashboard">Home</a>
+    </div>
+    <div>
+        <a href="/helpdesk">Help Desk</a>
+        <a href="/logout">Logout</a>
+    </div>
+</div>
+
+<div class="container">
+    <h1 style="text-align:center;">Your Sales History</h1>
+
+    {% if sales %}
+    <table>
+        <tr>
+            <th>Product Title</th>
+            <th>Buyer</th>
+            <th>Quantity Sold</th>
+            <th>Price per Unit</th>
+            <th>Total Sale Amount</th>
+            <th>Date of Sale</th>
+        </tr>
+        {% for sale in sales %}
+        <tr>
+            <td>{{ sale.product_title }}</td>
+            <td>{{ sale.buyer_name }}</td>
+            <td>{{ sale.quantity }}</td>
+            <td>${{ sale.price }}</td>
+            <td>${{ sale.price * sale.quantity }}</td>
+            <td>{{ sale.date }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+    <p style="text-align:center;">No sales yet.</p>
+    {% endif %}
+</div>
+
+</body>
+</html>

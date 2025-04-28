@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>View Sales</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <style>
+        body {
+            background: linear-gradient(to right, #74ebd5, #ACB6E5);
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            margin-top: 50px;
+        }
+        h2 {
+            margin-bottom: 30px;
+            text-align: center;
+            font-weight: bold;
+            color: #003366;
+        }
+        .table {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .thead-dark th {
+            background-color: #003366;
+            color: white;
+            text-align: center;
+        }
+        td {
+            text-align: center;
+            vertical-align: middle;
+        }
+        .btn-home {
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+        }
+        .btn-home a {
+            margin: 0 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <h2>📈 Your Sales Summary</h2>
+
+    {% if sales %}
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Order ID</th>
+                    <th>Buyer Email</th>
+                    <th>Product Title</th>
+                    <th>Product Name</th>
+                    <th>Quantity</th>
+                    <th>Payment ($)</th>
+                    <th>Date</th>
+                    <th>Rating ⭐</th>
+                    <th>Review 📝</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for sale in sales %}
+                <tr>
+                    <td>{{ sale[0] }}</td>
+                    <td>{{ sale[1] }}</td>
+                    <td>{{ sale[2] }}</td>
+                    <td>{{ sale[3] }}</td>
+                    <td>{{ sale[4] }}</td>
+                    <td>{{ sale[5] }}</td>
+                    <td>{{ sale[6] }}</td>
+                    <td>
+                        {% if sale[7] %}
+                            ⭐ {{ sale[7] }}/5
+                        {% else %}
+                            Not Rated
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if sale[8] %}
+                            {{ sale[8] }}
+                        {% else %}
+                            No Review
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+        <p class="text-center">You have no sales yet.</p>
+    {% endif %}
+
+    <div class="btn-home">
+        <a href="/sellerhome" class="btn btn-primary">🏠 Back to Seller Dashboard</a>
+        <a href="/logout" class="btn btn-danger">Logout</a>
+    </div>
+
+</div>
+
+</body>
+</html>
