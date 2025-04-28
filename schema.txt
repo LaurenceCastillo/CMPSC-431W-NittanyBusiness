@@ -76,7 +76,7 @@ CREATE TABLE Zipcode (
 );
 
 CREATE TABLE Requests (
-    request_ID      INT PRIMARY KEY NOT NULL,
+    request_ID      INTEGER PRIMARY KEY AUTOINCREMENT,
     sender_email    VARCHAR(50),
     helpdesk_email  VARCHAR(50),
     request_type    VARCHAR(50),
