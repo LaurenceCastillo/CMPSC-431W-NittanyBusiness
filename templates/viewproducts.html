@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ category_name }} Products</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+
+    <style>
+        .container {
+            margin-top: 40px;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+    <h2 class="text-center mb-4">{{ category_name }} Products</h2>
+
+    {% if products %}
+    <table class="table table-bordered table-striped">
+        <thead class="thead-dark">
+            <tr>
+                <th>Product Title</th>
+                <th>Product Name</th>
+                <th>Description</th>
+                <th>Price ($)</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for product in products %}
+            <tr>
+                <td>{{ product[1] }}</td>
+                <td>{{ product[2] }}</td>
+                <td>{{ product[3] }}</td>
+                <td>{{ product[4] }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <p class="text-center">No products found in this category.</p>
+    {% endif %}
+
+    <div class="text-center mt-4">
+        <a href="/browseproducts" class="btn btn-secondary">Back to Categories</a> |
+        <a href="/logout" class="btn btn-danger">Logout</a>
+    </div>
+</div>
+</body>
+</html>

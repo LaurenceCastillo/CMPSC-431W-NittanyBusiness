@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add New Product</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+
+    <style>
+        .form-container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+        }
+        input, select, textarea {
+            width: 100%;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            padding: 8px;
+        }
+    </style>
+</head>
+
+<body>
+<div class="d-flex justify-content-between align-items-center p-3 mb-4 border-bottom">
+    <div>
+        <a href="/sellerhome" class="btn btn-outline-primary">🏠 Home</a>
+    </div>
+    <div>
+        <a href="/logout" class="btn btn-outline-danger">Logout</a>
+    </div>
+</div>
+
+<div class="form-container">
+    <h2 class="text-center">Add New Product</h2>
+
+    <form action="/addproduct" method="POST">
+        <label>Product Title:</label>
+        <input type="text" name="product_title" required>
+
+        <label>Product Name:</label>
+        <input type="text" name="product_name" required>
+
+        <label>Category:</label>
+        <input type="text" name="category_name" required>
+
+        <label>Product Description:</label>
+        <textarea name="product_description" rows="3" required></textarea>
+
+        <label>Quantity:</label>
+        <input type="number" name="quantity" min="1" required>
+
+        <label>Price (in $):</label>
+        <input type="text" name="product_price" required>
+
+        <button type="submit" class="btn btn-primary btn-block">Add Product</button>
+    </form>
+</div>
+</body>
+</html>

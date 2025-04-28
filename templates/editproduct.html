@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Product</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+
+    <style>
+        .form-container {
+            max-width: 600px;
+            margin: 50px auto;
+        }
+        input, textarea {
+            width: 100%;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            padding: 8px;
+        }
+    </style>
+</head>
+
+<body>
+<div class="d-flex justify-content-between align-items-center p-3 mb-4 border-bottom">
+    <div>
+        <a href="/sellerhome" class="btn btn-outline-primary">🏠 Home</a>
+    </div>
+    <div>
+        <a href="/logout" class="btn btn-outline-danger">Logout</a>
+    </div>
+</div>
+
+<div class="form-container">
+    <h2 class="text-center">Edit Product</h2>
+
+    <form action="/editproduct/{{ listing_id }}" method="POST">
+        <label>Product Title:</label>
+        <input type="text" name="product_title" value="{{ product[0] }}" required>
+
+        <label>Product Description:</label>
+        <textarea name="product_description" rows="3" required>{{ product[1] }}</textarea>
+
+        <label>Quantity:</label>
+        <input type="number" name="quantity" value="{{ product[2] }}" min="1" required>
+
+        <label>Price (in $):</label>
+        <input type="text" name="product_price" value="{{ product[3] }}" required>
+
+        <button type="submit" class="btn btn-success btn-block">Save Changes</button>
+    </form>
+</div>
+</body>
+</html>
