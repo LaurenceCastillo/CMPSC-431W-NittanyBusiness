@@ -268,8 +268,20 @@ def secure_checkout():
         connection.commit()
 
     pass
+    #TASK 5:Product/Seller Review
+@app.route('/review', methods=['POST', 'GET'])
+def review():
+    if request.method == 'POST':
+        order_ID = "x" #placeholder value. It should reference the order_ID of the order purchased on the previous page#
+        rate = request.form['rate']
+        review_desc = request.form['review_desc']
 
-    #TASK 5: 
+        with sql.connect('database.db') as connection:
+            cursor = connection.cursor()
+            cursor.execute('INSERT INTO Reviews VALUES (?,?,?)', (order_ID, rate, review_desc))
+            connection.commit()
+    else:
+        return render_template('add_review.html')#placeholder .html file name for when we make the adding review page#
 
     #TASK 6:
 
