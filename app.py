@@ -5,6 +5,7 @@ from flask import Flask, render_template, request, session, redirect, url_for
 app = Flask(__name__)
 app.secret_key = 'your_secret_key_here'  # Needed for Flask session
 
+user_email = None #store as global variable so that it can be access for future functions
 # Home Page - Login
 @app.route('/')
 def index():
@@ -17,14 +18,18 @@ def login():
         email = request.form['email']
         password = request.form['password']
 
+        user_email = email
+
         if check_email(email):
             if check_password(email, password):
                 session['email'] = email  # Save user email to session
                 role = get_role(email)
                 if role == 'Buyer':
-                    return render_template('BuyerPage.html')
+                    return render_template('buyer.html')
                 elif role == 'Seller':
-                    return render_template('SellerPage.html')
+                    return render_template('seller.html')
+                elif role == 'Help Desk':
+                    return render_template('helpdesk.html')
                 else:
                     return render_template('login.html', error='Role not found.')
             else:
@@ -145,6 +150,10 @@ def get_role(email):
         result = cursor.fetchone()
         if result:
             return 'Seller'
+        
+        cursor.execute('SELECT email FROM HelpDesk email = ?', (email,))
+        if result:
+            return 'Help Desk'
 
     return None
 
@@ -172,12 +181,13 @@ def browse_products():
     return render_template('categories.html', categories_products = categories_products) #all products and categories are stored in a tuple
 
 #TASK 3: PRODUCT LISTING MANAGEMENT
+#TODO Needs revision
 @app.route('/manage_products', methods = ['POST','GET'])
 def view_products():
 
     with sql.connect('database.db') as connection:
         cursor = connection.cursor()
-        cursor.execute('SELECT * FROM Products WHERE seller_email = ?',(email,))
+        cursor.execute('SELECT * FROM Products WHERE seller_email = ?',(user_email,))
         contents = cursor.fetchall
     
     return render_template('view_product.html', contents = contents)
@@ -185,7 +195,6 @@ def view_products():
 @app.route('/add_listing', methods = ['POST','GET'])
 def add_listing(): #TODO: ADJUST addlisting.html to fit the schema
     if request.method == 'POST':
-        user_email = email
         id = request.form['listing_id'] #TODO: consider autoincrementing in sql instead of guessing an ID until unique
         category = request.form['category_name']
         product_title = request.form['product_title']
@@ -216,13 +225,13 @@ def remove_listing():
 
 
 #TASK 4: ORDER MANAGEMENT
-@app.route('/product_info', methods = ['POST', 'GET'])
+@app.route('/product_info', methods = ['POST', 'GET']) #TODO: dispaly average rating of product
 def product_info():
     id = request.form['listing_id']
     with sql.connect('database.db') as connection:
         cursor = connection.cursor()
-        cursor.execute('SELECT * FROM Products WHERE listing_ID = ?'(id,))
-        info = cursor.fetchall
+        cursor.execute('SELECT * FROM Products WHERE listing_ID = ?', (id,))
+        info = cursor.fetchall()
     return render_template('product_info.html', info = info)
 
 
@@ -232,7 +241,7 @@ def place_order():
     quantity = request.form['quantity']
     requested_quantity = request.form['requested_quantity']
 
-    if quantity - requested_quantity < 0: #check if quantity exceeds stock
+    if quantity < requested_quantity: #check if quantity exceeds stock
         message = "Not enough items in stock"
         return render_template('product_info.html', message = message)
 
@@ -241,19 +250,60 @@ def place_order():
 
     with sql.connect('database.db') as connection: #TODO: consider implementing a way to prevent user from buying more than available quantity
         cursor = connection.cursor()
-        cursor.execute('SELECT * FROM Products WHERE listing_ID = ?'(id,))
-        info = cursor.fetchall
+        cursor.execute('SELECT * FROM Products WHERE listing_ID = ?', (id,))
+        info = cursor.fetchall()
 
     return render_template('review_order.html', info = info, total = total, quantity = requested_quantity)
 
-@app.route('/secure_checkout', methods = ['POST', 'GET']) #TODO: COMPLETE FUNCTION
+@app.route('/secure_checkout', methods = ['POST', 'GET'])
 def secure_checkout():
-    email = request.form['email']
-    
+    if request.method == 'POST':
+        credit_card_num = request.form['credit_card_num']
+        card_type = request.form['card_type']
+        expire_year = request.form['expire_year']
+        security_code = request.form['security_code']
 
-    return render_template('secure_checkout.html',)
 
-@app.route('/order_confirmation', methods = ['POST', 'GET'])
+        #TODO: ensure that details get carried over from review_order.html
+        # Get order details 
+        listing_id = request.form['listing_id']
+        requested_quantity = int(request.form['requested_quantity'])
+        price = float(request.form['product_price'])
+        total = requested_quantity * price
+
+        # Deduct purchased quantity from inventory
+        with sql.connect('database.db') as connection:
+            cursor = connection.cursor()
+
+            # Update the product quantity in the inventory
+            cursor.execute('UPDATE Products SET quantity = quantity - ? WHERE listing_ID = ?', (requested_quantity, listing_id))
+
+            # Check if the product's quantity has reached zero, and if so, mark it as "sold"
+            cursor.execute('SELECT quantity FROM Products WHERE listing_ID = ?', (listing_id,))
+            remaining_quantity = cursor.fetchone()[0]
+            if remaining_quantity == 0:
+                cursor.execute('UPDATE Products SET status = 2 WHERE listing_ID = ?', (listing_id,))  # Mark as sold
+
+            # Update the seller's account balance
+            # Assuming you have a "Users" table with an "account_balance" column for the seller
+            cursor.execute('SELECT seller_id FROM Products WHERE listing_ID = ?', (listing_id,))
+            seller_id = cursor.fetchone()[0]
+            cursor.execute('SELECT account_balance FROM Users WHERE user_id = ?', (seller_id,))
+            current_balance = cursor.fetchone()[0]
+            new_balance = current_balance + total
+            cursor.execute('UPDATE Users SET account_balance = ? WHERE user_id = ?', (new_balance, seller_id))
+
+            connection.commit()  # Commit the changes to the database
+
+        # After successful order and payment, redirect the buyer to a confirmation page or show success message
+        return render_template('order_success.html', total=total)
+
+    else:
+        # If GET request, display the secure checkout page where the buyer enters their credit card details
+        return render_template('secure_checkout.html')
+
+
+@app.route('/order_confirmation', methods = ['POST', 'GET']) #TODO: display average rating of product
 def order_confirmation():
     id = request.form['listing_id']
     quantity = request.form['quantity']
@@ -270,7 +320,7 @@ def order_confirmation():
         else:
             cursor.execute('UPDATE Products SET quantity = quantity - ? WHERE listing_ID = ?',(requested_quantity, id,))
         cursor.execute('UPDATE Products SET status = 2 WHERE listing_id = ? AND quantity = quantity - ?',(id, requested_quantity,))
-        cursor.execute('SELECT * FROM Products WHERE listing_ID = ?'(id,))
+        cursor.execute('SELECT * FROM Products WHERE listing_ID = ?', (id,))
         info = cursor.fetchall
         connection.commit()
 
@@ -320,6 +370,14 @@ def review():
 #        except sql.IntegrityError: #if email already exists
 #            continue
 #    connect.commit()
+
+def fetch_rating(seller_email): #function to grab rating of specified email.
+    with sql.connect('database.db') as connection:
+        cursor = connection.cursor()
+        cursor.execute('SELECT AVG(r.rate) FROM Orders o JOIN Reviews r ON o.order_ID = r.order_ID WHERE o.seller_email = ?', (seller_email,))
+        info = cursor.fetchone()
+        
+    return info[0] if info else None
 
 
 if __name__ == "__main__":
