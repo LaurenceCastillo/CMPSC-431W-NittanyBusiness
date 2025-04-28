@@ -182,7 +182,7 @@ def browse_products():
 
 #TASK 3: PRODUCT LISTING MANAGEMENT
 #TODO Needs revision
-@app.route('/manage_products', methods = ['POST','GET'])
+@app.route('/manage_products', methods = ['POST','GET']) #
 def view_products():
 
     with sql.connect('database.db') as connection:
@@ -221,7 +221,7 @@ def remove_listing():
             cursor = connection.cursor()
             cursor.execute('UPDATE Products SET status = 0 WHERE listing_ID = ?',(id,)) #status 0 indicates inactive
             connection.commit()
-    return render_template('removelisting.html')
+    return render_template('remove_listing.html')
 
 
 #TASK 4: ORDER MANAGEMENT
@@ -232,6 +232,10 @@ def product_info():
         cursor = connection.cursor()
         cursor.execute('SELECT * FROM Products WHERE listing_ID = ?', (id,))
         info = cursor.fetchall()
+
+    avg_rating = fetch_rating(id) #get average rating for product
+    info.append(avg_rating)    
+
     return render_template('product_info.html', info = info)
 
 
@@ -248,14 +252,14 @@ def place_order():
     price = request.form['product_price']
     total = requested_quantity * int(price) #because price is stored as varchar
 
-    with sql.connect('database.db') as connection: #TODO: consider implementing a way to prevent user from buying more than available quantity
+    with sql.connect('database.db') as connection:
         cursor = connection.cursor()
         cursor.execute('SELECT * FROM Products WHERE listing_ID = ?', (id,))
         info = cursor.fetchall()
 
     return render_template('review_order.html', info = info, total = total, quantity = requested_quantity)
 
-@app.route('/secure_checkout', methods = ['POST', 'GET'])
+@app.route('/secure_checkout', methods = ['POST', 'GET']) #TODO: Fix this entire function and find out how to get product info to carry over
 def secure_checkout():
     if request.method == 'POST':
         credit_card_num = request.form['credit_card_num']
@@ -371,12 +375,12 @@ def review():
 #            continue
 #    connect.commit()
 
-def fetch_rating(seller_email): #function to grab rating of specified email.
+def fetch_rating(listing_id): #function to grab rating of specified email.
     with sql.connect('database.db') as connection:
         cursor = connection.cursor()
-        cursor.execute('SELECT AVG(r.rate) FROM Orders o JOIN Reviews r ON o.order_ID = r.order_ID WHERE o.seller_email = ?', (seller_email,))
+        cursor.execute('SELECT AVG(r.rate) FROM Orders o JOIN Reviews r ON o.order_ID = r.order_ID WHERE o.seller_email = ?', (listing_id,))
         info = cursor.fetchone()
-        
+
     return info[0] if info else None
 
 
