@@ -98,7 +98,8 @@
 
         <div class="text-center mt-4">
             <button type="submit" class="btn btn-primary">Save Changes</button>
-            <a href="/browseproducts" class="btn btn-secondary">Back to Home</a>
+            <!--<a href="/browseproducts" class="btn btn-secondary">Back to Home</a>-->
+            <a href="{% if role == 'Buyer' %}/browseproducts{% elif role == 'Seller' %}/sellerhome{% else %}/home{% endif %}" class="btn btn-secondary">Back to Home</a>
         </div>
 
     </form>
