@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>HelpDesk Dashboard</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #89f7fe, #66a6ff);
+            font-family: Arial, sans-serif;
+        }
+        .navbar {
+            background-color: #003366;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .navbar a {
+            color: white;
+            margin: 0 1rem;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .navbar a:hover {
+            text-decoration: underline;
+        }
+        .container {
+            margin-top: 50px;
+            text-align: center;
+        }
+        .btn-option {
+            margin: 20px;
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <div>
+        <a href="/helpdesk">🏠 Dashboard</a>
+        <a href="/accountsettings">⚙️ Settings</a>
+    </div>
+    <div>
+        <a href="/logout">🔓 Logout</a>
+    </div>
+</div>
+
+<div class="container">
+    <h1 class="mb-5">Welcome, HelpDesk Staff!</h1>
+
+    <a href="/helpdesk/manageusers" class="btn btn-primary btn-option">🔧 Manage Users</a>
+    <a href="/helpdesk/requests" class="btn btn-success btn-option">📜 View Requests</a>
+</div>
+
+<div class="text-center mt-4">
+    <a href="/helpdesk/account" class="btn btn-warning m-2">⚙️ My Account</a>
+</div>
+
+
+</body>
+</html>

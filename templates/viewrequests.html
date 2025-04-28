@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>View User Requests</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+</head>
+<body>
+
+<div class="container mt-5">
+    <h2 class="text-center mb-4">User Requests</h2>
+
+    <form method="POST">
+    <table class="table table-bordered table-striped">
+        <thead class="thead-dark">
+            <tr>
+                <th>Request ID</th>
+                <th>Sender Email</th>
+                <th>Message</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for req in requests %}
+            <tr>
+                <td>{{ req[0] }}</td>
+                <td>{{ req[1] }}</td>
+                <td>{{ req[2] }}</td>
+                <td>{{ req[3] }}</td>
+                <td>
+                    <input type="hidden" name="request_id" value="{{ req[0] }}">
+                    <select name="new_status" class="form-control">
+                        <option value="Pending" {% if req[3] == 'Pending' %}selected{% endif %}>Pending</option>
+                        <option value="Resolved" {% if req[3] == 'Resolved' %}selected{% endif %}>Resolved</option>
+                    </select>
+                    <button type="submit" class="btn btn-success btn-sm mt-2">Update</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </form>
+
+    <div class="text-center mt-4">
+        <a href="/helpdesk" class="btn btn-secondary">Back to Help Desk Home</a>
+    </div>
+</div>
+
+</body>
+</html>
